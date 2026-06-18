@@ -226,7 +226,7 @@
 <header class="appbar">
   <div>
     <h1><span class="bars"><i style="height:10px"></i><i style="height:16px"></i><i style="height:7px"></i><i style="height:18px"></i><i style="height:11px"></i></span>СКЛАД ЦОЙ</h1>
-    <div class="sub">Учёт товаров</div>
+    <div class="sub" id="appsub">Учёт товаров</div>
   </div>
   <div class="bar-right">
     <button class="add-btn" id="addBtn">
@@ -271,7 +271,7 @@
    Чтобы трое переписывались с разных телефонов — вставь сюда
    данные бесплатного проекта Supabase. Пусто = чат работает
    только на этом устройстве. */
-const CONFIG = { supabaseUrl:'', supabaseKey:'' };
+const CONFIG = { supabaseUrl:'https://nwalajgpjjwybjefitng.supabase.co', supabaseKey:'sb_publishable_pCCZt7kNlo2wCNJK5lb4fA_QTV6RyR-' };
 
 /* ---------- Пользователи ---------- */
 const USERS=[
@@ -290,7 +290,20 @@ function load(){
   if(!mem) mem=seed();
   return mem;
 }
-function save(){try{localStorage.setItem(KEY,JSON.stringify(mem));}catch(e){}}
+let supa=null, cloudOn=false;
+function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(mem));}catch(e){}}
+function save(){ saveLocal(); if(cloudOn)cloudPush(); }
+async function cloudPush(){
+  if(!cloudOn)return;
+  try{ await supa.from('warehouse').upsert({id:1,data:{products:db.products,returns:db.returns,shipments:db.shipments},updated_at:new Date().toISOString()}); }catch(e){}
+}
+async function cloudLoadWarehouse(){
+  try{
+    const {data}=await supa.from('warehouse').select('data').eq('id',1).maybeSingle();
+    if(data&&data.data){ db.products=data.data.products||[]; db.returns=data.data.returns||[]; db.shipments=data.data.shipments||[]; saveLocal(); render(); }
+    else { await supa.from('warehouse').upsert({id:1,data:{products:db.products,returns:db.returns,shipments:db.shipments}}); }
+  }catch(e){}
+}
 function seed(){
   return { products:[], returns:[], shipments:[] };
 }
@@ -545,7 +558,7 @@ function emptyState(icon,t,d){
 /* ---------- Чат ---------- */
 function renderChat(){
   const v=$('#view-chat');
-  const banner = chatCloud ? '' :
+  const banner = cloudOn ? '' :
     `<div class="chat-banner">Чат сейчас работает только на этом устройстве. Чтобы Аза, Николай и Юлия переписывались с разных телефонов — нужно подключить общую базу (инструкция у разработчика).</div>`;
   let html=banner+'<div class="chat-list">';
   let lastDay='';
@@ -563,7 +576,7 @@ function scrollChat(){ setTimeout(()=>window.scrollTo(0,document.body.scrollHeig
 async function sendMsg(){
   const f=$('#chatField'); const text=f.value.trim(); if(!text||!currentUser)return;
   f.value='';
-  if(chatCloud){
+  if(cloudOn){
     try{ await supa.from('messages').insert({login:currentUser.login,text}); }catch(e){ alert('Не удалось отправить'); }
   }else{
     chatMsgs.push({id:id(),user:currentUser.login,text,ts:Date.now()});
@@ -573,23 +586,27 @@ async function sendMsg(){
 $('#chatSend').onclick=sendMsg;
 $('#chatField').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg()});
 
-let supa=null, chatCloud=false;
-async function initCloudChat(){
+async function initCloud(){
   if(!CONFIG.supabaseUrl||!CONFIG.supabaseKey) return;
   try{
     const m=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
     supa=m.createClient(CONFIG.supabaseUrl,CONFIG.supabaseKey);
+    cloudOn=true;
+    const sub=$('#appsub'); if(sub)sub.textContent='Учёт товаров · общий доступ';
+    // СКЛАД
+    await cloudLoadWarehouse();
+    supa.channel('wh').on('postgres_changes',{event:'*',schema:'public',table:'warehouse'},()=>cloudLoadWarehouse()).subscribe();
+    // ЧАТ
     const {data}=await supa.from('messages').select('*').order('created_at',{ascending:true}).limit(300);
     chatMsgs=(data||[]).map(r=>({id:r.id,user:r.login,text:r.text,ts:new Date(r.created_at).getTime()}));
-    chatCloud=true;
-    supa.channel('room').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},p=>{
+    renderChat(); if(tab==='chat')scrollChat();
+    supa.channel('msg').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},p=>{
       const r=p.new;
       if(chatMsgs.some(x=>x.id===r.id))return;
       chatMsgs.push({id:r.id,user:r.login,text:r.text,ts:new Date(r.created_at).getTime()});
       renderChat(); if(tab==='chat')scrollChat();
     }).subscribe();
-    renderChat();
-  }catch(e){ chatCloud=false; }
+  }catch(e){ cloudOn=false; }
 }
 
 /* ---------- Модалки ---------- */
@@ -789,7 +806,7 @@ function openShip(sid){
 }
 
 render();
-initCloudChat();
+initCloud();
 </script>
 </body>
 </html>
