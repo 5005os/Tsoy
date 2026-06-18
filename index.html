@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>СКЛАД — учёт товаров и поставок</title>
+<title>СКЛАД ЦОЙ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
     --bg:#ECEEF1; --paper:#FFFFFF; --ink:#15171C; --soft:#5A6170;
     --line:#E2E5EA; --accent:#FF5A1F; --accent-d:#E64910;
     --blue:#2563EB; --green:#16A34A; --red:#E11D48;
-    --purple:#7C3AED; --amber:#D97706; --slate:#64748B; --teal:#0D9488;
+    --purple:#7C3AED; --amber:#D97706; --slate:#64748B;
     --shadow:0 1px 2px rgba(20,23,28,.06),0 8px 24px rgba(20,23,28,.05);
     --tab-h:64px;
   }
@@ -29,71 +29,63 @@
   /* App bar */
   .appbar{
     position:sticky;top:0;z-index:30;background:var(--ink);color:#fff;
-    padding:calc(env(safe-area-inset-top) + 14px) 18px 14px;
-    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:calc(env(safe-area-inset-top) + 14px) 16px 14px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
   }
-  .appbar h1{font-size:19px;font-weight:800;margin:0;letter-spacing:.04em;display:flex;align-items:center;gap:10px}
+  .appbar h1{font-size:18px;font-weight:800;margin:0;letter-spacing:.04em;display:flex;align-items:center;gap:9px}
   .appbar h1 .bars{display:inline-flex;gap:2px;align-items:flex-end;height:18px}
   .appbar h1 .bars i{display:block;width:2px;background:var(--accent);border-radius:1px}
-  .appbar .sub{font-size:11px;color:#9aa1ad;font-weight:500;letter-spacing:.02em;margin-top:2px}
+  .appbar .sub{font-size:11px;color:#9aa1ad;font-weight:500;margin-top:2px}
+  .bar-right{display:flex;align-items:center;gap:8px}
   .add-btn{
-    background:var(--accent);color:#fff;font-weight:700;font-size:14px;
-    padding:9px 14px;border-radius:11px;display:inline-flex;align-items:center;gap:6px;
+    background:var(--accent);color:#fff;font-weight:700;font-size:13px;
+    padding:9px 12px;border-radius:11px;display:none;align-items:center;gap:5px;
     box-shadow:0 4px 12px rgba(255,90,31,.35);
   }
   .add-btn:active{background:var(--accent-d)}
-  .add-btn svg{width:16px;height:16px}
+  .add-btn svg{width:15px;height:15px}
+  .avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;
+    font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center}
 
   .view{display:none;padding:16px 14px 24px}
   .view.active{display:block;animation:fade .18s ease}
   @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
-  /* Stat grid */
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .stat{
-    background:var(--paper);border-radius:16px;padding:14px;box-shadow:var(--shadow);
-    border:1px solid var(--line);position:relative;overflow:hidden;
-  }
+  .stat{background:var(--paper);border-radius:16px;padding:14px;box-shadow:var(--shadow);
+    border:1px solid var(--line);position:relative;overflow:hidden}
   .stat .num{font-size:30px;font-weight:700;line-height:1;letter-spacing:-.01em}
   .stat .lab{font-size:12px;color:var(--soft);font-weight:600;margin-top:7px}
   .stat .tag{position:absolute;top:14px;right:14px;width:9px;height:9px;border-radius:50%}
   .stat.wide{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between}
   .stat.wide .num{font-size:34px}
-
   .section-h{font-size:13px;font-weight:700;color:var(--soft);text-transform:uppercase;
     letter-spacing:.06em;margin:24px 4px 12px}
 
-  /* Search */
-  .search{
-    display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--line);
-    border-radius:13px;padding:12px 14px;box-shadow:var(--shadow);margin-bottom:14px;
-  }
+  .search{display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--line);
+    border-radius:13px;padding:12px 14px;box-shadow:var(--shadow);margin-bottom:14px}
   .search svg{width:18px;height:18px;color:var(--soft);flex-shrink:0}
   .search input{border:none;outline:none;font-size:16px;width:100%;background:none;color:var(--ink);font-family:inherit}
 
-  /* Cards (products etc) */
-  .card{
-    background:var(--paper);border:1px solid var(--line);border-radius:16px;
-    padding:14px;box-shadow:var(--shadow);margin-bottom:11px;
-  }
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:16px;
+    padding:14px;box-shadow:var(--shadow);margin-bottom:11px}
   .card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
   .card .name{font-size:16px;font-weight:700;line-height:1.25}
-  .card .code{font-size:12.5px;color:var(--soft);margin-top:4px;letter-spacing:.03em;display:flex;align-items:center;gap:6px}
+  .card .code{font-size:12.5px;color:var(--soft);margin-top:4px;letter-spacing:.03em;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
   .card .code .bc{display:inline-flex;gap:1.5px;align-items:flex-end}
   .card .code .bc i{display:block;width:1.5px;height:13px;background:var(--soft);opacity:.5}
   .counts{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap}
-  .chip{
-    flex:1;min-width:78px;background:#F6F7F9;border-radius:11px;padding:9px 10px;text-align:center;
-  }
+  .chip{flex:1;min-width:78px;background:#F6F7F9;border-radius:11px;padding:9px 10px;text-align:center}
   .chip .v{font-size:19px;font-weight:700;line-height:1}
   .chip .k{font-size:10.5px;color:var(--soft);font-weight:600;margin-top:4px;text-transform:uppercase;letter-spacing:.03em}
-  .chip.b .v{color:var(--blue)} .chip.g .v{color:var(--green)} .chip.k0 .v{color:var(--ink)}
+  .chip.k0 .v{color:var(--ink)} .chip.b .v{color:var(--blue)}
+
+  .thumb{width:54px;height:54px;border-radius:12px;object-fit:cover;background:#F0F1F4;flex-shrink:0}
+  .thumb.ph{display:flex;align-items:center;justify-content:center;color:var(--soft);border:1px dashed var(--line)}
 
   .row-actions{display:flex;gap:8px;margin-top:12px}
-  .mini{
-    flex:1;border:1px solid var(--line);border-radius:10px;padding:9px;font-size:13px;font-weight:600;
-    color:var(--ink);background:#fff;display:flex;align-items:center;justify-content:center;gap:5px;
-  }
+  .mini{flex:1;border:1px solid var(--line);border-radius:10px;padding:9px;font-size:13px;font-weight:600;
+    color:var(--ink);background:#fff;display:flex;align-items:center;justify-content:center;gap:5px}
   .mini:active{background:#F0F1F4}
   .mini.danger{color:var(--red);border-color:#FAD2DA}
   .mini svg{width:15px;height:15px}
@@ -101,40 +93,41 @@
   .pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;
     padding:5px 10px;border-radius:99px;white-space:nowrap}
   .pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
-  .p-await{color:var(--amber);background:#FEF3E2}
   .p-repair{color:var(--purple);background:#F1EAFE}
   .p-done{color:var(--green);background:#E4F6EA}
   .p-parts{color:var(--slate);background:#EEF1F5}
   .p-assemble{color:var(--amber);background:#FEF3E2}
   .p-ready{color:var(--green);background:#E4F6EA}
 
-  /* filter chips */
-  .filters{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;margin:0 -2px;-webkit-overflow-scrolling:touch}
+  .filters{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;margin:0 -2px}
   .filters::-webkit-scrollbar{display:none}
   .fchip{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);border-radius:99px;
     padding:8px 14px;font-size:13px;font-weight:600;color:var(--soft)}
   .fchip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 
-  /* empty */
   .empty{text-align:center;padding:48px 24px;color:var(--soft)}
   .empty svg{width:46px;height:46px;opacity:.4;margin-bottom:14px}
   .empty .t{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px}
   .empty .d{font-size:13.5px;line-height:1.5}
 
+  .ship-meta{display:flex;gap:14px;margin-top:10px;font-size:12.5px;color:var(--soft);font-weight:600;flex-wrap:wrap}
+  .ship-item{display:flex;align-items:center;gap:10px;background:#F6F7F9;border-radius:11px;padding:10px 12px;margin-bottom:8px}
+  .ship-item .nm{flex:1;font-size:14px;font-weight:600;line-height:1.3}
+  .ship-item .nm small{display:block;font-size:11.5px;color:var(--soft);font-weight:500;margin-top:2px}
+  .ship-item .q{font-weight:700;color:var(--blue)}
+  .ship-item .x{color:var(--red);font-weight:700;font-size:20px;padding:0 2px}
+
   /* tab bar */
-  .tabbar{
-    position:fixed;left:0;right:0;bottom:0;z-index:40;height:calc(var(--tab-h) + env(safe-area-inset-bottom));
+  .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:40;height:calc(var(--tab-h) + env(safe-area-inset-bottom));
     padding-bottom:env(safe-area-inset-bottom);background:rgba(255,255,255,.92);
-    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);
-    display:flex;
-  }
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex}
   .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-    color:var(--soft);font-size:10.5px;font-weight:600;position:relative}
-  .tab svg{width:23px;height:23px}
+    color:var(--soft);font-size:10px;font-weight:600;position:relative}
+  .tab svg{width:22px;height:22px}
   .tab.on{color:var(--accent)}
-  .tab .badge{position:absolute;top:6px;left:calc(50% + 6px);min-width:16px;height:16px;border-radius:9px;
-    background:var(--red);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;
-    justify-content:center;padding:0 4px;font-family:inherit}
+  .tab .badge{position:absolute;top:5px;left:calc(50% + 5px);min-width:15px;height:15px;border-radius:8px;
+    background:var(--red);color:#fff;font-size:9.5px;font-weight:700;display:flex;align-items:center;
+    justify-content:center;padding:0 3px}
 
   /* modal */
   .overlay{position:fixed;inset:0;z-index:60;background:rgba(20,23,28,.45);display:none;align-items:flex-end}
@@ -148,104 +141,168 @@
   .inp{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;font-size:16px;
     font-family:inherit;outline:none;color:var(--ink);background:#fff}
   .inp:focus{border-color:var(--accent)}
-  textarea.inp{resize:none;min-height:64px}
-  .two{display:flex;gap:10px}
-  .two>div{flex:1}
+  .two{display:flex;gap:10px}.two>div{flex:1}
   .seg{display:flex;gap:8px;margin-top:6px}
-  .seg button{flex:1;border:1.5px solid var(--line);border-radius:12px;padding:11px;font-weight:700;font-size:14px;color:var(--soft)}
+  .seg button{flex:1;border:1.5px solid var(--line);border-radius:12px;padding:11px;font-weight:700;font-size:13.5px;color:var(--soft)}
   .seg button.on{border-color:var(--ink);background:var(--ink);color:#fff}
   .save{width:100%;background:var(--accent);color:#fff;font-weight:800;font-size:16px;padding:15px;
     border-radius:14px;margin-top:22px;box-shadow:0 6px 16px rgba(255,90,31,.3)}
   .save:active{background:var(--accent-d)}
-  .ship-item{display:flex;align-items:center;gap:8px;background:#F6F7F9;border-radius:11px;padding:10px 12px;margin-bottom:8px}
-  .ship-item .nm{flex:1;font-size:14px;font-weight:600}
-  .ship-item .q{font-weight:700}.mono.q{color:var(--blue)}
-  .ship-item .x{color:var(--red);font-weight:700;font-size:18px;padding:0 4px}
   .link{display:block;text-align:center;color:var(--soft);font-size:13px;font-weight:600;margin:26px auto 8px;text-decoration:underline}
-  .stepper{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:11px;overflow:hidden}
-  .stepper button{width:42px;height:40px;font-size:22px;font-weight:600;color:var(--ink)}
-  .stepper button:active{background:#F0F1F4}
-  .stepper input{width:56px;text-align:center;border:none;border-left:1.5px solid var(--line);border-right:1.5px solid var(--line);
-    height:40px;font-size:16px;font-weight:700;font-family:inherit;outline:none}
-  .ship-meta{display:flex;gap:14px;margin-top:10px;font-size:12.5px;color:var(--soft);font-weight:600;flex-wrap:wrap}
-  .ship-meta b{color:var(--ink)}
+
+  .photo-row{display:flex;gap:14px;align-items:center;margin-bottom:2px}
+  .photo-box{width:92px;height:92px;border-radius:15px;background:#F6F7F9;border:1.5px dashed var(--line);
+    display:flex;align-items:center;justify-content:center;color:var(--soft);overflow:hidden;flex-shrink:0;cursor:pointer}
+  .photo-box img{width:100%;height:100%;object-fit:cover}
+  .photo-info .pi-t{font-weight:700;font-size:15px}
+  .photo-info .pi-d{font-size:12.5px;color:var(--soft);margin-top:3px;line-height:1.4}
+  .pi-load{font-size:13px;color:var(--soft);font-weight:600}
+
+  /* login */
+  .login{position:fixed;inset:0;z-index:100;background:var(--ink);color:#fff;display:flex;
+    flex-direction:column;justify-content:center;align-items:center;padding:24px;text-align:center}
+  .login.hide{display:none}
+  .login .lg{font-size:30px;font-weight:800;letter-spacing:.05em;display:flex;align-items:center;gap:12px}
+  .login .lg .bars{display:inline-flex;gap:3px;align-items:flex-end;height:30px}
+  .login .lg .bars i{display:block;width:3px;background:var(--accent);border-radius:1px}
+  .login .tag{color:#9aa1ad;font-size:14px;margin:10px 0 34px;font-weight:500}
+  .login .lbox{width:100%;max-width:330px}
+  .login input{width:100%;border:1.5px solid #2c2f37;background:#1d2026;color:#fff;border-radius:13px;
+    padding:15px 16px;font-size:16px;font-family:inherit;outline:none;margin-bottom:12px}
+  .login input:focus{border-color:var(--accent)}
+  .login button{width:100%;background:var(--accent);color:#fff;font-weight:800;font-size:16px;
+    padding:16px;border-radius:13px;margin-top:6px}
+  .login .err{color:#ff8c8c;font-size:13.5px;font-weight:600;min-height:20px;margin-top:12px}
+
+  /* chat */
+  #view-chat{padding-bottom:84px}
+  .chat-banner{background:#FEF3E2;color:#9a6206;border:1px solid #f6dca6;border-radius:12px;
+    padding:11px 13px;font-size:12.5px;line-height:1.45;font-weight:500;margin-bottom:14px}
+  .chat-list{display:flex;flex-direction:column;gap:3px}
+  .day{align-self:center;background:#E2E5EA;color:var(--soft);font-size:11px;font-weight:700;
+    padding:4px 11px;border-radius:99px;margin:10px 0}
+  .msg{max-width:80%;padding:9px 13px;border-radius:16px;margin-bottom:6px;font-size:14.5px;line-height:1.35;word-break:break-word}
+  .msg.them{background:var(--paper);border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:5px}
+  .msg.me{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:5px}
+  .msg .who{font-size:11.5px;font-weight:700;color:var(--purple);margin-bottom:2px}
+  .msg .tm{font-size:10px;opacity:.65;margin-top:3px;text-align:right}
+  .chat-input{position:fixed;left:0;right:0;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom));
+    z-index:35;display:none;gap:8px;padding:10px 12px;background:rgba(255,255,255,.96);
+    backdrop-filter:blur(12px);border-top:1px solid var(--line)}
+  .chat-input.show{display:flex}
+  .chat-input input{flex:1;border:1.5px solid var(--line);border-radius:22px;padding:11px 16px;
+    font-size:16px;font-family:inherit;outline:none}
+  .chat-input input:focus{border-color:var(--accent)}
+  .chat-input button{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;
+    flex-shrink:0;display:flex;align-items:center;justify-content:center}
+  .chat-input button svg{width:20px;height:20px}
 </style>
 </head>
 <body>
 
+<!-- ВХОД -->
+<div class="login" id="login">
+  <div class="lg"><span class="bars"><i style="height:16px"></i><i style="height:26px"></i><i style="height:12px"></i><i style="height:30px"></i><i style="height:18px"></i></span>СКЛАД ЦОЙ</div>
+  <div class="tag">Учёт товаров</div>
+  <div class="lbox">
+    <input id="lg-login" placeholder="Логин" autocomplete="off" autocapitalize="off">
+    <input id="lg-pass" type="password" placeholder="Пароль" autocomplete="off">
+    <button id="lg-btn">Войти</button>
+    <div class="err" id="lg-err"></div>
+  </div>
+</div>
+
 <header class="appbar">
   <div>
-    <h1><span class="bars"><i style="height:10px"></i><i style="height:16px"></i><i style="height:7px"></i><i style="height:18px"></i><i style="height:11px"></i></span>СКЛАД</h1>
-    <div class="sub" id="appsub">Учёт товаров · Китай → Wildberries</div>
+    <h1><span class="bars"><i style="height:10px"></i><i style="height:16px"></i><i style="height:7px"></i><i style="height:18px"></i><i style="height:11px"></i></span>СКЛАД ЦОЙ</h1>
+    <div class="sub">Учёт товаров</div>
   </div>
-  <button class="add-btn" id="addBtn" style="display:none">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-    <span id="addLabel">Добавить</span>
-  </button>
+  <div class="bar-right">
+    <button class="add-btn" id="addBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      <span id="addLabel">Добавить</span>
+    </button>
+    <button class="avatar" id="avatarBtn">?</button>
+  </div>
 </header>
 
-<!-- ГЛАВНАЯ -->
 <main class="view active" id="view-home"></main>
-<!-- ТОВАРЫ -->
+<main class="view" id="view-chat"></main>
 <main class="view" id="view-goods"></main>
-<!-- ВОЗВРАТЫ -->
 <main class="view" id="view-returns"></main>
-<!-- ФУРА -->
 <main class="view" id="view-ship"></main>
+
+<div class="chat-input" id="chatInput">
+  <input id="chatField" placeholder="Сообщение…" autocomplete="off">
+  <button id="chatSend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 16-8-5 16-3.5-6.5L4 12Z"/></svg></button>
+</div>
 
 <nav class="tabbar">
   <button class="tab on" data-tab="home">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5M5 9.5V20h14V9.5" stroke-linejoin="round" stroke-linecap="round"/></svg>
-    Главная
-  </button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5M5 9.5V20h14V9.5" stroke-linejoin="round" stroke-linecap="round"/></svg>Главная</button>
+  <button class="tab" data-tab="chat">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4V5Z"/></svg>Чат
+    <span class="badge" id="badge-chat" style="display:none">0</span></button>
   <button class="tab" data-tab="goods">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7.5 12 3l9 4.5v9L12 21 3 16.5v-9Z" stroke-linejoin="round"/><path d="m3 7.5 9 4.5 9-4.5M12 12v9" stroke-linejoin="round"/></svg>
-    Товары
-  </button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7.5 12 3l9 4.5v9L12 21 3 16.5v-9Z" stroke-linejoin="round"/><path d="m3 7.5 9 4.5 9-4.5M12 12v9" stroke-linejoin="round"/></svg>Товары</button>
   <button class="tab" data-tab="returns">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>
-    Возвраты
-    <span class="badge" id="badge-returns" style="display:none">0</span>
-  </button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>Возвраты
+    <span class="badge" id="badge-returns" style="display:none">0</span></button>
   <button class="tab" data-tab="ship">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6h12v9H1zM13 9h4l3 3v3h-7z"/><circle cx="6" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg>
-    Фура
-    <span class="badge" id="badge-ship" style="display:none">0</span>
-  </button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6h12v9H1zM13 9h4l3 3v3h-7z"/><circle cx="6" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg>Фура
+    <span class="badge" id="badge-ship" style="display:none">0</span></button>
 </nav>
 
 <div class="overlay" id="overlay"><div class="sheet" id="sheet"></div></div>
 
 <script>
-/* ---------- Хранилище (localStorage + резерв в памяти) ---------- */
-const KEY='sklad_v1';
+/* ====== НАСТРОЙКА ОБЩЕГО ЧАТА (по желанию) ======
+   Чтобы трое переписывались с разных телефонов — вставь сюда
+   данные бесплатного проекта Supabase. Пусто = чат работает
+   только на этом устройстве. */
+const CONFIG = { supabaseUrl:'', supabaseKey:'' };
+
+/* ---------- Пользователи ---------- */
+const USERS=[
+  {login:'Аза',     pass:'909010'},
+  {login:'Николай', pass:'Цой2026'},
+  {login:'Юлия',    pass:'Склад1'},
+];
+let currentUser=null;
+
+/* ---------- Хранилище ---------- */
+const KEY='sklad_v2', CKEY='sklad_chat_v2', UKEY='sklad_user';
 let mem=null;
 function load(){
   if(mem) return mem;
-  try{const r=localStorage.getItem(KEY); mem=r?JSON.parse(r):null;}catch(e){mem=null;}
+  try{const r=localStorage.getItem(KEY);mem=r?JSON.parse(r):null;}catch(e){mem=null;}
   if(!mem) mem=seed();
   return mem;
 }
-function save(){ try{localStorage.setItem(KEY,JSON.stringify(mem));}catch(e){} }
+function save(){try{localStorage.setItem(KEY,JSON.stringify(mem));}catch(e){}}
 function seed(){
   return {
     products:[
-      {id:id(),name:'Наушники TWS Pro',barcode:'4600123456789',arrived:500,packaged:320,stock:180},
-      {id:id(),name:'Power Bank 20000',barcode:'4600987654321',arrived:300,packaged:300,stock:0},
-      {id:id(),name:'Кабель USB-C 2м',barcode:'4600555111222',arrived:1000,packaged:640,stock:360},
+      {id:id(),name:'Наушники TWS Pro',barcode:'4600123456789',qty:180,photo:''},
+      {id:id(),name:'Power Bank 20000',barcode:'4600987654321',qty:90,photo:''},
+      {id:id(),name:'Кабель USB-C 2м',barcode:'4600555111222',qty:360,photo:''},
     ],
     returns:[
-      {id:id(),name:'Наушники TWS Pro',barcode:'4600123456789',qty:3,reason:'Не заряжается',customer:'Заказ 88213',status:'await',repairer:'',date:Date.now()-86400000},
-      {id:id(),name:'Power Bank 20000',barcode:'4600987654321',qty:1,reason:'Брак корпуса',customer:'Заказ 88455',status:'repair',repairer:'Алексей',date:Date.now()-43200000},
+      {id:id(),name:'Наушники TWS Pro',barcode:'4600123456789',qty:3,status:'repair',date:Date.now()-86400000},
+      {id:id(),name:'Power Bank 20000',barcode:'4600987654321',qty:1,status:'done',date:Date.now()-43200000},
     ],
     shipments:[
       {id:id(),city:'Тула',truck:'А123ВС 71',driver:'',items:[{name:'Кабель USB-C 2м',barcode:'4600555111222',qty:200}],status:'assembling',date:Date.now()-3600000},
     ],
-    master:'Алексей'
   };
 }
 function id(){return Math.random().toString(36).slice(2,10)}
 const db=load();
+
+let chatMsgs=[];
+function loadChat(){try{const r=localStorage.getItem(CKEY);chatMsgs=r?JSON.parse(r):[];}catch(e){chatMsgs=[];}}
+function saveChat(){try{localStorage.setItem(CKEY,JSON.stringify(chatMsgs));}catch(e){}}
+loadChat();
 
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s);
@@ -253,38 +310,75 @@ const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"
 const sum=(a,f)=>a.reduce((t,x)=>t+(+f(x)||0),0);
 function bc(){return '<span class="bc"><i></i><i></i><i></i><i></i><i></i><i></i></span>'}
 function fmtDate(t){const d=new Date(t);return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}
+function fmtTime(t){return new Date(t).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}
+function fmtDay(t){return new Date(t).toLocaleDateString('ru-RU',{day:'2-digit',month:'long'})}
+function photoIcon(s){s=s||30;return `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3.2"/></svg>`}
+async function compressImage(file,max,q){
+  let bmp;
+  try{ bmp=await createImageBitmap(file,{imageOrientation:'from-image'}); }
+  catch(e){ bmp=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;const fr=new FileReader();fr.onload=ev=>i.src=ev.target.result;fr.onerror=rej;fr.readAsDataURL(file);}); }
+  let w=bmp.width,h=bmp.height;
+  if(w>h){ if(w>max){h=Math.round(h*max/w);w=max;} } else { if(h>max){w=Math.round(w*max/h);h=max;} }
+  const c=document.createElement('canvas');c.width=w;c.height=h;
+  c.getContext('2d').drawImage(bmp,0,0,w,h);
+  return c.toDataURL('image/jpeg',q);
+}
+function adjustStock(item,sign){
+  const p=db.products.find(x=>(item.barcode&&x.barcode===item.barcode)||x.name===item.name);
+  if(p) p.qty=Math.max(0,(+p.qty||0)+sign*(+item.qty||0));
+}
 
-const ST={
-  await:{c:'p-await',t:'Ожидает ремонта'},
-  repair:{c:'p-repair',t:'В ремонте'},
-  done:{c:'p-done',t:'Отремонтирован'},
-  parts:{c:'p-parts',t:'В запчасти'},
+const ST={ repair:{c:'p-repair',t:'На ремонт'}, done:{c:'p-done',t:'После ремонта'}, parts:{c:'p-parts',t:'В запчасти'} };
+
+/* ---------- Вход ---------- */
+function showLogin(){ $('#login').classList.remove('hide'); }
+function doLogin(){
+  const l=$('#lg-login').value.trim(), p=$('#lg-pass').value;
+  const u=USERS.find(x=>x.login.toLowerCase()===l.toLowerCase()&&x.pass===p);
+  if(!u){ $('#lg-err').textContent='Неверный логин или пароль'; return; }
+  currentUser={login:u.login};
+  try{localStorage.setItem(UKEY,JSON.stringify(currentUser));}catch(e){}
+  $('#lg-err').textContent=''; $('#lg-pass').value='';
+  $('#login').classList.add('hide');
+  $('#avatarBtn').textContent=currentUser.login[0].toUpperCase();
+  render();
+}
+$('#lg-btn').onclick=doLogin;
+$('#lg-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+$('#avatarBtn').onclick=()=>{
+  if(!currentUser)return;
+  if(confirm('Выйти из аккаунта «'+currentUser.login+'»?')){
+    currentUser=null; try{localStorage.removeItem(UKEY);}catch(e){}
+    showLogin();
+  }
 };
+try{const u=localStorage.getItem(UKEY);if(u){currentUser=JSON.parse(u);$('#login').classList.add('hide');$('#avatarBtn').textContent=currentUser.login[0].toUpperCase();}}catch(e){}
 
 /* ---------- Навигация ---------- */
 let tab='home';
-const titles={home:{add:false},goods:{add:'Товар'},returns:{add:'Возврат'},ship:{add:'Фура'}};
+const addFor={goods:'Товар',returns:'Возврат',ship:'Фура'};
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
 function switchTab(t){
   tab=t;
   document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   $('#view-'+t).classList.add('active');
-  const a=titles[t].add;
+  const a=addFor[t];
   $('#addBtn').style.display=a?'inline-flex':'none';
   if(a)$('#addLabel').textContent=a;
+  $('#chatInput').classList.toggle('show',t==='chat');
   window.scrollTo(0,0);
   render();
+  if(t==='chat') scrollChat();
 }
 $('#addBtn').onclick=()=>{ if(tab==='goods')openProduct(); else if(tab==='returns')openReturn(); else if(tab==='ship')openShip(); };
 
 /* ---------- Рендер ---------- */
 let goodsQuery='', retFilter='all';
-function render(){ renderHome(); renderGoods(); renderReturns(); renderShip(); renderBadges(); }
+function render(){ renderHome(); renderGoods(); renderReturns(); renderShip(); renderChat(); renderBadges(); }
 
 function renderBadges(){
-  const ar=db.returns.filter(r=>r.status==='await'||r.status==='repair').length;
-  const bs=document.querySelectorAll('.badge');
+  const ar=sum(db.returns.filter(r=>r.status==='repair'),r=>r.qty);
   const br=$('#badge-returns'); br.style.display=ar?'flex':'none'; br.textContent=ar;
   const as=db.shipments.filter(s=>s.status==='assembling').length;
   const bsh=$('#badge-ship'); bsh.style.display=as?'flex':'none'; bsh.textContent=as;
@@ -292,27 +386,22 @@ function renderBadges(){
 
 function renderHome(){
   const p=db.products;
-  const stock=sum(p,x=>x.stock), arrived=sum(p,x=>x.arrived), packaged=sum(p,x=>x.packaged);
-  const inRepair=sum(db.returns.filter(r=>r.status==='repair'),r=>r.qty);
-  const awaiting=sum(db.returns.filter(r=>r.status==='await'),r=>r.qty);
+  const stock=sum(p,x=>x.qty);
+  const onRepair=sum(db.returns.filter(r=>r.status==='repair'),r=>r.qty);
+  const afterRepair=sum(db.returns.filter(r=>r.status==='done'),r=>r.qty);
   const parts=sum(db.returns.filter(r=>r.status==='parts'),r=>r.qty);
   const assembling=db.shipments.filter(s=>s.status==='assembling').length;
   const ready=db.shipments.filter(s=>s.status==='ready').length;
   $('#view-home').innerHTML=`
     <div class="stat wide">
-      <div><div class="num mono">${stock}</div><div class="lab">Единиц на складе · ${p.length} наимен.</div></div>
+      <div><div class="num mono">${stock}</div><div class="lab">Всего товара на складе · ${p.length} наимен.</div></div>
       <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="var(--accent)" stroke-width="1.6"><path d="M3 7.5 12 3l9 4.5v9L12 21 3 16.5v-9Z" stroke-linejoin="round"/><path d="m3 7.5 9 4.5 9-4.5M12 12v9" stroke-linejoin="round"/></svg>
-    </div>
-    <div class="section-h">Товары</div>
-    <div class="grid">
-      <div class="stat"><span class="tag" style="background:var(--blue)"></span><div class="num mono">${arrived}</div><div class="lab">Пришло из Китая</div></div>
-      <div class="stat"><span class="tag" style="background:var(--green)"></span><div class="num mono">${packaged}</div><div class="lab">Упаковано</div></div>
     </div>
     <div class="section-h">Возвраты и ремонт</div>
     <div class="grid">
-      <div class="stat"><span class="tag" style="background:var(--amber)"></span><div class="num mono">${awaiting}</div><div class="lab">Ждут ремонта</div></div>
-      <div class="stat"><span class="tag" style="background:var(--purple)"></span><div class="num mono">${inRepair}</div><div class="lab">В ремонте</div></div>
-      <div class="stat"><span class="tag" style="background:var(--slate)"></span><div class="num mono">${parts}</div><div class="lab">Ушло в запчасти</div></div>
+      <div class="stat"><span class="tag" style="background:var(--purple)"></span><div class="num mono">${onRepair}</div><div class="lab">На ремонт</div></div>
+      <div class="stat"><span class="tag" style="background:var(--green)"></span><div class="num mono">${afterRepair}</div><div class="lab">После ремонта</div></div>
+      <div class="stat"><span class="tag" style="background:var(--slate)"></span><div class="num mono">${parts}</div><div class="lab">В запчасти</div></div>
       <div class="stat"><span class="tag" style="background:var(--red)"></span><div class="num mono">${db.returns.length}</div><div class="lab">Всего возвратов</div></div>
     </div>
     <div class="section-h">Поставки (фуры)</div>
@@ -337,21 +426,22 @@ function renderGoods(){
     ${list.length?list.map(p=>`
       <div class="card">
         <div class="top">
-          <div>
-            <div class="name">${esc(p.name)}</div>
-            <div class="code">${bc()}<span class="mono">${esc(p.barcode)||'без кода'}</span></div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            ${p.photo?`<img class="thumb" src="${p.photo}" alt="">`:`<div class="thumb ph">${photoIcon(22)}</div>`}
+            <div>
+              <div class="name">${esc(p.name)}</div>
+              <div class="code">${bc()}<span class="mono">${esc(p.barcode)||'без кода'}</span></div>
+            </div>
           </div>
         </div>
         <div class="counts">
-          <div class="chip k0"><div class="v mono">${p.stock}</div><div class="k">На складе</div></div>
-          <div class="chip b"><div class="v mono">${p.arrived}</div><div class="k">Пришло</div></div>
-          <div class="chip g"><div class="v mono">${p.packaged}</div><div class="k">Упаковано</div></div>
+          <div class="chip k0"><div class="v mono">${p.qty}</div><div class="k">На складе, шт</div></div>
         </div>
         <div class="row-actions">
           <button class="mini" data-edit="${p.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Изменить</button>
           <button class="mini danger" data-del="${p.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>Удалить</button>
         </div>
-      </div>`).join(''):emptyState('package',q?'Ничего не найдено':'Товаров пока нет',q?'Измените запрос поиска.':'Нажмите «Товар» вверху, чтобы добавить первую позицию.')}
+      </div>`).join(''):emptyState('package',q?'Ничего не найдено':'Товаров пока нет',q?'Измените запрос поиска.':'Нажмите «Товар» вверху, чтобы добавить позицию.')}
   `;
   const s=$('#gsearch'); s.oninput=e=>{goodsQuery=e.target.value;const pos=e.target.selectionStart;renderGoods();const ns=$('#gsearch');ns.focus();ns.setSelectionRange(pos,pos);};
   v.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openProduct(b.dataset.edit));
@@ -365,7 +455,7 @@ function renderReturns(){
   const v=$('#view-returns');
   v.innerHTML=`
     <div class="filters">
-      ${[['all','Все',db.returns.length],['await','Ждут',cnt('await')],['repair','В ремонте',cnt('repair')],['done','После ремонта',cnt('done')],['parts','Запчасти',cnt('parts')]]
+      ${[['all','Все',db.returns.length],['repair','На ремонт',cnt('repair')],['done','После ремонта',cnt('done')],['parts','Запчасти',cnt('parts')]]
         .map(([k,t,n])=>`<button class="fchip ${f===k?'on':''}" data-f="${k}">${t}${n?' · '+n:''}</button>`).join('')}
     </div>
     ${list.length?list.map(r=>{const st=ST[r.status];return `
@@ -377,44 +467,32 @@ function renderReturns(){
           </div>
           <span class="pill ${st.c}">${st.t}</span>
         </div>
-        <div class="ship-meta">
-          ${r.reason?`<span>Причина: <b>${esc(r.reason)}</b></span>`:''}
-          ${r.customer?`<span>${esc(r.customer)}</span>`:''}
-          ${r.repairer?`<span>Мастер: <b>${esc(r.repairer)}</b></span>`:''}
-          <span>${fmtDate(r.date)}</span>
-        </div>
+        <div class="ship-meta"><span>${fmtDate(r.date)}</span></div>
         <div class="row-actions">
           ${nextActions(r)}
           <button class="mini" data-edit="${r.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
           <button class="mini danger" data-del="${r.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
         </div>
-      </div>`}).join(''):emptyState('return',f==='all'?'Возвратов нет':'Здесь пусто',f==='all'?'Нажмите «Возврат» вверху, чтобы оформить возврат с Wildberries.':'Нет позиций с этим статусом.')}
+      </div>`}).join(''):emptyState('return',f==='all'?'Возвратов нет':'Здесь пусто',f==='all'?'Нажмите «Возврат» вверху, чтобы оформить возврат.':'Нет позиций с этим статусом.')}
   `;
   v.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{retFilter=b.dataset.f;renderReturns();});
   v.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openReturn(b.dataset.edit));
   v.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ if(confirm('Удалить возврат?')){db.returns=db.returns.filter(x=>x.id!==b.dataset.del);save();render();} });
-  v.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>setReturnStatus(b.dataset.id,b.dataset.set));
+  v.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{const r=db.returns.find(x=>x.id===b.dataset.id);if(r){r.status=b.dataset.set;save();render();}});
 }
 function nextActions(r){
-  const btn=(id,st,label,color)=>`<button class="mini" data-id="${id}" data-set="${st}" style="color:${color};border-color:${color}33">${label}</button>`;
-  if(r.status==='await') return btn(r.id,'repair','В ремонт','var(--purple)');
-  if(r.status==='repair') return btn(r.id,'done','Готов','var(--green)')+btn(r.id,'parts','В запчасти','var(--slate)');
-  if(r.status==='done') return btn(r.id,'await','Вернуть в очередь','var(--amber)');
-  if(r.status==='parts') return btn(r.id,'repair','Вернуть в ремонт','var(--purple)');
+  const btn=(st,label,color)=>`<button class="mini" data-id="${r.id}" data-set="${st}" style="color:${color};border-color:${color}33">${label}</button>`;
+  if(r.status==='repair') return btn('done','Готов','var(--green)')+btn('parts','В запчасти','var(--slate)');
+  if(r.status==='done')   return btn('repair','Вернуть в ремонт','var(--purple)');
+  if(r.status==='parts')  return btn('repair','Вернуть в ремонт','var(--purple)');
   return '';
-}
-function setReturnStatus(rid,st){
-  const r=db.returns.find(x=>x.id===rid); if(!r)return;
-  if(st==='repair'&&!r.repairer){ r.repairer=db.master||''; }
-  r.status=st; save(); render();
 }
 
 function renderShip(){
   const list=[...db.shipments].sort((a,b)=>b.date-a.date);
   const v=$('#view-ship');
   v.innerHTML= list.length?list.map(s=>{
-    const total=sum(s.items,i=>i.qty);
-    const ready=s.status==='ready';
+    const total=sum(s.items,i=>i.qty), ready=s.status==='ready';
     return `
     <div class="card">
       <div class="top">
@@ -428,17 +506,17 @@ function renderShip(){
         <div class="chip k0"><div class="v mono">${total}</div><div class="k">Единиц</div></div>
         <div class="chip b"><div class="v mono">${s.items.length}</div><div class="k">Позиций</div></div>
       </div>
-      ${s.items.length?'<div style="margin-top:12px">'+s.items.map(i=>`<div class="ship-item"><span class="nm">${esc(i.name)}</span><span class="q mono q">${i.qty} шт</span></div>`).join('')+'</div>':''}
+      ${s.items.length?'<div style="margin-top:12px">'+s.items.map(i=>`<div class="ship-item"><span class="nm">${esc(i.name)}<small>ШК: ${esc(i.barcode)||'—'}</small></span><span class="q mono">${i.qty} шт</span></div>`).join('')+'</div>':''}
       <div class="ship-meta"><span>${fmtDate(s.date)}</span></div>
       <div class="row-actions">
         <button class="mini" data-toggle="${s.id}" style="color:${ready?'var(--amber)':'var(--green)'};border-color:${ready?'var(--amber)':'var(--green)'}33">${ready?'Вернуть на сборку':'Отметить готовой'}</button>
         <button class="mini" data-edit="${s.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
         <button class="mini danger" data-del="${s.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
       </div>
-    </div>`}).join('') : emptyState('truck','Поставок нет','Нажмите «Фура» вверху: укажите город, номер машины и соберите список товаров.');
+    </div>`}).join('') : emptyState('truck','Поставок нет','Нажмите «Фура» вверху: укажите город, номер машины и собери список товаров. Кол-во спишется со склада.');
   v.querySelectorAll('[data-toggle]').forEach(b=>b.onclick=()=>{const s=db.shipments.find(x=>x.id===b.dataset.toggle);s.status=s.status==='ready'?'assembling':'ready';save();render();});
   v.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openShip(b.dataset.edit));
-  v.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ if(confirm('Удалить поставку?')){db.shipments=db.shipments.filter(x=>x.id!==b.dataset.del);save();render();} });
+  v.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ const s=db.shipments.find(x=>x.id===b.dataset.del); if(s&&confirm('Удалить поставку? Товары вернутся на склад.')){s.items.forEach(it=>adjustStock(it,1));db.shipments=db.shipments.filter(x=>x.id!==b.dataset.del);save();render();} });
 }
 
 function emptyState(icon,t,d){
@@ -450,6 +528,56 @@ function emptyState(icon,t,d){
   return `<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ic}</svg><div class="t">${t}</div><div class="d">${d}</div></div>`;
 }
 
+/* ---------- Чат ---------- */
+function renderChat(){
+  const v=$('#view-chat');
+  const banner = chatCloud ? '' :
+    `<div class="chat-banner">Чат сейчас работает только на этом устройстве. Чтобы Аза, Николай и Юлия переписывались с разных телефонов — нужно подключить общую базу (инструкция у разработчика).</div>`;
+  let html=banner+'<div class="chat-list">';
+  let lastDay='';
+  if(!chatMsgs.length){ html+='<div class="empty" style="padding:30px 10px"><div class="d">Сообщений пока нет. Напишите первое 👋</div></div>'; }
+  chatMsgs.forEach(m=>{
+    const day=fmtDay(m.ts);
+    if(day!==lastDay){ html+=`<div class="day">${day}</div>`; lastDay=day; }
+    const me=currentUser&&m.user===currentUser.login;
+    html+=`<div class="msg ${me?'me':'them'}">${me?'':`<div class="who">${esc(m.user)}</div>`}<div>${esc(m.text)}</div><div class="tm">${fmtTime(m.ts)}</div></div>`;
+  });
+  html+='</div>';
+  v.innerHTML=html;
+}
+function scrollChat(){ setTimeout(()=>window.scrollTo(0,document.body.scrollHeight),60); }
+async function sendMsg(){
+  const f=$('#chatField'); const text=f.value.trim(); if(!text||!currentUser)return;
+  f.value='';
+  if(chatCloud){
+    try{ await supa.from('messages').insert({login:currentUser.login,text}); }catch(e){ alert('Не удалось отправить'); }
+  }else{
+    chatMsgs.push({id:id(),user:currentUser.login,text,ts:Date.now()});
+    saveChat(); renderChat(); scrollChat();
+  }
+}
+$('#chatSend').onclick=sendMsg;
+$('#chatField').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg()});
+
+let supa=null, chatCloud=false;
+async function initCloudChat(){
+  if(!CONFIG.supabaseUrl||!CONFIG.supabaseKey) return;
+  try{
+    const m=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+    supa=m.createClient(CONFIG.supabaseUrl,CONFIG.supabaseKey);
+    const {data}=await supa.from('messages').select('*').order('created_at',{ascending:true}).limit(300);
+    chatMsgs=(data||[]).map(r=>({id:r.id,user:r.login,text:r.text,ts:new Date(r.created_at).getTime()}));
+    chatCloud=true;
+    supa.channel('room').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},p=>{
+      const r=p.new;
+      if(chatMsgs.some(x=>x.id===r.id))return;
+      chatMsgs.push({id:r.id,user:r.login,text:r.text,ts:new Date(r.created_at).getTime()});
+      renderChat(); if(tab==='chat')scrollChat();
+    }).subscribe();
+    renderChat();
+  }catch(e){ chatCloud=false; }
+}
+
 /* ---------- Модалки ---------- */
 const overlay=$('#overlay'), sheet=$('#sheet');
 function openSheet(html){ sheet.innerHTML='<div class="grab"></div>'+html; overlay.classList.add('show'); document.body.style.overflow='hidden'; }
@@ -458,23 +586,37 @@ overlay.onclick=e=>{ if(e.target===overlay)closeSheet(); };
 
 function openProduct(pid){
   const p=pid?db.products.find(x=>x.id===pid):null;
+  let photo=p?(p.photo||''):'';
   openSheet(`
     <h2>${p?'Изменить товар':'Новый товар'}</h2>
+    <div class="photo-row">
+      <label for="f-photo" class="photo-box" id="f-pbox">${photo?`<img src="${photo}" alt="">`:photoIcon(34)}</label>
+      <div class="photo-info">
+        <div class="pi-t">Фото товара</div>
+        <div class="pi-d">Нажмите, чтобы снять на камеру<br>или выбрать из галереи</div>
+        <button type="button" class="mini" id="f-prm" style="display:${photo?'flex':'none'};max-width:150px;margin-top:9px;border-color:#FAD2DA;color:var(--red)">Удалить фото</button>
+      </div>
+    </div>
+    <input type="file" id="f-photo" accept="image/*" hidden>
     <label class="fl">Название</label>
     <input class="inp" id="f-name" value="${p?esc(p.name):''}" placeholder="Напр. Наушники TWS Pro">
     <label class="fl">Штрих-код</label>
     <input class="inp mono" id="f-bc" inputmode="numeric" value="${p?esc(p.barcode):''}" placeholder="4600000000000">
-    <div class="two">
-      <div><label class="fl">Пришло</label><input class="inp mono" id="f-arr" inputmode="numeric" value="${p?p.arrived:0}"></div>
-      <div><label class="fl">Упаковано</label><input class="inp mono" id="f-pack" inputmode="numeric" value="${p?p.packaged:0}"></div>
-    </div>
-    <label class="fl">На складе (остаток)</label>
-    <input class="inp mono" id="f-stock" inputmode="numeric" value="${p?p.stock:0}">
+    <label class="fl">Количество</label>
+    <input class="inp mono" id="f-qty" inputmode="numeric" value="${p?p.qty:0}">
     <button class="save" id="f-save">${p?'Сохранить':'Добавить товар'}</button>
   `);
+  const pbox=$('#f-pbox'), prm=$('#f-prm');
+  $('#f-photo').onchange=async e=>{
+    const file=e.target.files[0]; if(!file)return;
+    pbox.innerHTML='<span class="pi-load">Сжимаю…</span>';
+    try{ photo=await compressImage(file,420,0.62); pbox.innerHTML=`<img src="${photo}" alt="">`; prm.style.display='flex'; }
+    catch(err){ pbox.innerHTML=photoIcon(34); alert('Не удалось загрузить фото'); }
+  };
+  prm.onclick=()=>{ photo=''; pbox.innerHTML=photoIcon(34); prm.style.display='none'; $('#f-photo').value=''; };
   $('#f-save').onclick=()=>{
     const name=$('#f-name').value.trim(); if(!name)return alert('Укажите название');
-    const o={name,barcode:$('#f-bc').value.trim(),arrived:+$('#f-arr').value||0,packaged:+$('#f-pack').value||0,stock:+$('#f-stock').value||0};
+    const o={name,barcode:$('#f-bc').value.trim(),qty:+$('#f-qty').value||0,photo};
     if(p)Object.assign(p,o); else db.products.unshift({id:id(),...o});
     save();closeSheet();render();
   };
@@ -485,32 +627,25 @@ function openReturn(rid){
   const opts=db.products.map(p=>`<option value="${esc(p.name)}" data-bc="${esc(p.barcode)}">`).join('');
   openSheet(`
     <h2>${r?'Изменить возврат':'Новый возврат'}</h2>
-    <label class="fl">Товар</label>
+    <label class="fl">Название товара</label>
     <input class="inp" id="r-name" list="prodlist" value="${r?esc(r.name):''}" placeholder="Название товара">
     <datalist id="prodlist">${opts}</datalist>
     <div class="two">
       <div><label class="fl">Штрих-код</label><input class="inp mono" id="r-bc" inputmode="numeric" value="${r?esc(r.barcode):''}"></div>
-      <div><label class="fl">Кол-во</label><input class="inp mono" id="r-qty" inputmode="numeric" value="${r?r.qty:1}"></div>
+      <div><label class="fl">Количество</label><input class="inp mono" id="r-qty" inputmode="numeric" value="${r?r.qty:1}"></div>
     </div>
-    <label class="fl">Причина возврата</label>
-    <input class="inp" id="r-reason" value="${r?esc(r.reason):''}" placeholder="Напр. не включается">
-    <label class="fl">Заказ / покупатель</label>
-    <input class="inp" id="r-cust" value="${r?esc(r.customer):''}" placeholder="Номер заказа Wildberries">
-    <label class="fl">Мастер (кто ремонтирует)</label>
-    <input class="inp" id="r-master" value="${r?esc(r.repairer):esc(db.master||'')}" placeholder="Имя">
     <label class="fl">Статус</label>
     <div class="seg" id="r-seg">
-      ${[['await','Ждёт'],['repair','В ремонте'],['done','Готов'],['parts','Запчасти']].map(([k,t])=>`<button data-v="${k}" class="${(r?r.status:'await')===k?'on':''}">${t}</button>`).join('')}
+      ${[['repair','На ремонт'],['done','После ремонта'],['parts','Запчасти']].map(([k,t])=>`<button data-v="${k}" class="${(r?r.status:'repair')===k?'on':''}">${t}</button>`).join('')}
     </div>
     <button class="save" id="r-save">${r?'Сохранить':'Добавить возврат'}</button>
   `);
-  let status=r?r.status:'await';
+  let status=r?r.status:'repair';
   $('#r-seg').querySelectorAll('button').forEach(b=>b.onclick=()=>{status=b.dataset.v;$('#r-seg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));});
   $('#r-name').onchange=e=>{const o=[...document.querySelectorAll('#prodlist option')].find(x=>x.value===e.target.value);if(o&&!$('#r-bc').value)$('#r-bc').value=o.dataset.bc;};
   $('#r-save').onclick=()=>{
     const name=$('#r-name').value.trim(); if(!name)return alert('Укажите товар');
-    const master=$('#r-master').value.trim(); if(master)db.master=master;
-    const o={name,barcode:$('#r-bc').value.trim(),qty:+$('#r-qty').value||1,reason:$('#r-reason').value.trim(),customer:$('#r-cust').value.trim(),status,repairer:master};
+    const o={name,barcode:$('#r-bc').value.trim(),qty:+$('#r-qty').value||1,status};
     if(r)Object.assign(r,o); else db.returns.unshift({id:id(),date:Date.now(),...o});
     save();closeSheet();render();
   };
@@ -520,7 +655,8 @@ function openShip(sid){
   const s=sid?db.shipments.find(x=>x.id===sid):null;
   let items=s?JSON.parse(JSON.stringify(s.items)):[];
   const opts=db.products.map(p=>`<option value="${esc(p.name)}" data-bc="${esc(p.barcode)}">`).join('');
-  function draw(){
+  let status=s?s.status:'assembling';
+  function draw(keep){
     openSheet(`
       <h2>${s?'Изменить фуру':'Новая фура'}</h2>
       <div class="two">
@@ -531,31 +667,29 @@ function openShip(sid){
       <input class="inp" id="s-driver" value="${s?esc(s.driver||''):''}" placeholder="Имя водителя">
       <label class="fl">Статус</label>
       <div class="seg" id="s-seg">
-        <button data-v="assembling" class="${(s?s.status:'assembling')==='assembling'?'on':''}">На сборке</button>
-        <button data-v="ready" class="${s&&s.status==='ready'?'on':''}">Готова</button>
+        <button data-v="assembling" class="${status==='assembling'?'on':''}">На сборке</button>
+        <button data-v="ready" class="${status==='ready'?'on':''}">Готова</button>
       </div>
       <label class="fl">Товары в фуре</label>
-      <div id="s-items">${items.length?items.map((i,idx)=>`<div class="ship-item"><span class="nm">${esc(i.name)}</span><span class="q mono q">${i.qty} шт</span><span class="x" data-rm="${idx}">×</span></div>`).join(''):'<div style="color:var(--soft);font-size:13px;padding:4px 2px 8px">Пока пусто</div>'}</div>
-      <div class="two" style="align-items:flex-end">
-        <div><input class="inp" id="s-iname" list="prodlist2" placeholder="Товар"><datalist id="prodlist2">${opts}</datalist></div>
-        <div style="flex:0 0 auto"><input class="inp mono" id="s-iqty" inputmode="numeric" style="width:74px" placeholder="шт" value="1"></div>
-        <button class="mini" id="s-add" style="flex:0 0 auto;height:48px;padding:0 14px">＋</button>
+      <div id="s-items">${items.length?items.map((i,idx)=>`<div class="ship-item"><span class="nm">${esc(i.name)}<small>ШК: ${esc(i.barcode)||'—'}</small></span><span class="q mono">${i.qty} шт</span><span class="x" data-rm="${idx}">×</span></div>`).join(''):'<div style="color:var(--soft);font-size:13px;padding:4px 2px 8px">Пока пусто</div>'}</div>
+      <label class="fl">Добавить товар</label>
+      <input class="inp" id="s-iname" list="prodlist2" placeholder="Название товара"><datalist id="prodlist2">${opts}</datalist>
+      <div class="two" style="margin-top:10px;align-items:flex-end">
+        <div><input class="inp mono" id="s-ibc" inputmode="numeric" placeholder="Штрих-код (ШК)"></div>
+        <div style="flex:0 0 84px"><input class="inp mono" id="s-iqty" inputmode="numeric" placeholder="шт" value="1"></div>
+        <button class="mini" id="s-add" style="flex:0 0 52px;height:50px;font-size:24px">＋</button>
       </div>
-      <input type="hidden" id="s-ibc">
       <button class="save" id="s-save">${s?'Сохранить':'Создать фуру'}</button>
     `);
-    let status=s?s.status:'assembling';
+    if(keep){ $('#s-city').value=keep.c;$('#s-truck').value=keep.t;$('#s-driver').value=keep.d; }
     $('#s-seg').querySelectorAll('button').forEach(b=>b.onclick=()=>{status=b.dataset.v;$('#s-seg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));});
-    $('#s-iname').onchange=e=>{const o=[...document.querySelectorAll('#prodlist2 option')].find(x=>x.value===e.target.value);$('#s-ibc').value=o?o.dataset.bc:'';};
-    $('#s-add').onclick=()=>{const n=$('#s-iname').value.trim();const q=+$('#s-iqty').value||0;if(!n||q<=0)return;items.push({name:n,barcode:$('#s-ibc').value||'',qty:q});redrawItems();};
-    document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{items.splice(+b.dataset.rm,1);redrawItems();});
-    function redrawItems(){
-      const c=$('#s-city').value,t=$('#s-truck').value,d=$('#s-driver').value;
-      draw(); $('#s-city').value=c;$('#s-truck').value=t;$('#s-driver').value=d;
-      $('#s-seg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.v===status));
-    }
+    $('#s-iname').onchange=e=>{const o=[...document.querySelectorAll('#prodlist2 option')].find(x=>x.value===e.target.value);if(o)$('#s-ibc').value=o.dataset.bc;};
+    $('#s-add').onclick=()=>{const n=$('#s-iname').value.trim();const q=+$('#s-iqty').value||0;if(!n||q<=0)return alert('Укажите товар и количество');items.push({name:n,barcode:$('#s-ibc').value.trim(),qty:q});draw({c:$('#s-city').value,t:$('#s-truck').value,d:$('#s-driver').value});};
+    document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{items.splice(+b.dataset.rm,1);draw({c:$('#s-city').value,t:$('#s-truck').value,d:$('#s-driver').value});});
     $('#s-save').onclick=()=>{
       const city=$('#s-city').value.trim(); if(!city)return alert('Укажите город');
+      if(s){ s.items.forEach(it=>adjustStock(it,1)); }      // вернуть старое
+      items.forEach(it=>adjustStock(it,-1));                // списать новое
       const o={city,truck:$('#s-truck').value.trim(),driver:$('#s-driver').value.trim(),items,status};
       if(s)Object.assign(s,o); else db.shipments.unshift({id:id(),date:Date.now(),...o});
       save();closeSheet();render();
@@ -565,6 +699,7 @@ function openShip(sid){
 }
 
 render();
+initCloudChat();
 </script>
 </body>
 </html>
