@@ -149,6 +149,17 @@
     border-radius:14px;margin-top:22px;box-shadow:0 6px 16px rgba(255,90,31,.3)}
   .save:active{background:var(--accent-d)}
   .link{display:block;text-align:center;color:var(--soft);font-size:13px;font-weight:600;margin:26px auto 8px;text-decoration:underline}
+  .opt{display:block;width:100%;text-align:left;border:1.5px solid var(--line);border-radius:14px;padding:15px 16px;margin-top:12px;background:#fff}
+  .opt:active{background:#F6F7F9}
+  .opt .ot{font-weight:700;font-size:16px}
+  .opt .od{font-size:13px;color:var(--soft);margin-top:3px}
+  .opt.primary{border-color:var(--accent);background:#FFF4EF}
+  .opt.primary .ot{color:var(--accent-d)}
+  .actions{display:flex;gap:10px;margin-bottom:14px}
+  .ab{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:13px;padding:13px 8px;font-weight:700;font-size:13.5px;color:var(--ink);box-shadow:var(--shadow)}
+  .ab:active{background:#F0F1F4}
+  .ab.primary{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 4px 12px rgba(255,90,31,.3)}
+  .ab.primary:active{background:var(--accent-d)}
 
   .photo-row{display:flex;gap:14px;align-items:center;margin-bottom:2px}
   .photo-box{width:92px;height:92px;border-radius:15px;background:#F6F7F9;border:1.5px dashed var(--line);
@@ -295,6 +306,8 @@ loadChat();
 const $=s=>document.querySelector(s);
 const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const sum=(a,f)=>a.reduce((t,x)=>t+(+f(x)||0),0);
+const num=v=>{const n=parseFloat((v||'').toString().replace(',','.').trim());return isNaN(n)?0:n;};
+function fmtKg(v){return (Math.round(v*1000)/1000).toLocaleString('ru-RU');}
 function bc(){return '<span class="bc"><i></i><i></i><i></i><i></i><i></i><i></i></span>'}
 function fmtDate(t){const d=new Date(t);return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}
 function fmtTime(t){return new Date(t).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}
@@ -343,7 +356,7 @@ try{const u=localStorage.getItem(UKEY);if(u){currentUser=JSON.parse(u);$('#login
 
 /* ---------- Навигация ---------- */
 let tab='home';
-const addFor={goods:'Товар',returns:'Возврат',ship:'Фура'};
+const addFor={ship:'Фура'};
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
 function switchTab(t){
   tab=t;
@@ -358,7 +371,7 @@ function switchTab(t){
   render();
   if(t==='chat') scrollChat();
 }
-$('#addBtn').onclick=()=>{ if(tab==='goods')openProduct(); else if(tab==='returns')openReturn(); else if(tab==='ship')openShip(); };
+$('#addBtn').onclick=()=>{ if(tab==='ship')openShip(); };
 
 /* ---------- Рендер ---------- */
 let goodsQuery='', retFilter='all';
@@ -374,15 +387,16 @@ function renderBadges(){
 function renderHome(){
   const p=db.products;
   const stock=sum(p,x=>x.qty);
+  const weight=sum(p,x=>(+x.qty||0)*(+x.weight||0));
   const onRepair=sum(db.returns.filter(r=>r.status==='repair'),r=>r.qty);
   const afterRepair=sum(db.returns.filter(r=>r.status==='done'),r=>r.qty);
   const parts=sum(db.returns.filter(r=>r.status==='parts'),r=>r.qty);
   const assembling=db.shipments.filter(s=>s.status==='assembling').length;
   const ready=db.shipments.filter(s=>s.status==='ready').length;
   $('#view-home').innerHTML=`
-    <div class="stat wide">
-      <div><div class="num mono">${stock}</div><div class="lab">Всего товара на складе · ${p.length} наимен.</div></div>
-      <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="var(--accent)" stroke-width="1.6"><path d="M3 7.5 12 3l9 4.5v9L12 21 3 16.5v-9Z" stroke-linejoin="round"/><path d="m3 7.5 9 4.5 9-4.5M12 12v9" stroke-linejoin="round"/></svg>
+    <div class="grid">
+      <div class="stat"><div class="num mono">${stock}</div><div class="lab">Всего на складе, шт · ${p.length} наимен.</div></div>
+      <div class="stat"><div class="num mono">${fmtKg(weight)}</div><div class="lab">Общий вес, кг</div></div>
     </div>
     <div class="section-h">Возвраты и ремонт</div>
     <div class="grid">
@@ -404,6 +418,10 @@ function renderGoods(){
   const list=db.products.filter(p=>!q||p.name.toLowerCase().includes(q)||p.barcode.includes(q));
   const v=$('#view-goods');
   v.innerHTML=`
+    <div class="actions">
+      <button class="ab primary" id="g-create">＋ Создать товар</button>
+      <button class="ab" id="g-add">＋ Добавить товар</button>
+    </div>
     <div class="search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg>
       <input id="gsearch" placeholder="Поиск по названию или штрих-коду" value="${esc(goodsQuery)}" inputmode="search">
@@ -415,12 +433,13 @@ function renderGoods(){
             ${p.photo?`<img class="thumb" src="${p.photo}" alt="">`:`<div class="thumb ph">${photoIcon(22)}</div>`}
             <div>
               <div class="name">${esc(p.name)}</div>
-              <div class="code">${bc()}<span class="mono">${esc(p.barcode)||'без кода'}</span></div>
+              <div class="code">${bc()}<span class="mono">${esc(p.barcode)||'без кода'}</span>${p.weight?` · <span class="mono">${fmtKg(p.weight)} кг/шт</span>`:''}</div>
             </div>
           </div>
         </div>
         <div class="counts">
           <div class="chip k0"><div class="v mono">${p.qty}</div><div class="k">На складе, шт</div></div>
+          ${p.weight?`<div class="chip b"><div class="v mono">${fmtKg((+p.qty||0)*(+p.weight||0))}</div><div class="k">Общий вес, кг</div></div>`:''}
         </div>
         <div class="row-actions">
           <button class="mini" data-edit="${p.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Изменить</button>
@@ -429,6 +448,8 @@ function renderGoods(){
       </div>`).join(''):emptyState('package',q?'Ничего не найдено':'Товаров пока нет',q?'Измените запрос поиска.':'Нажмите «Товар» вверху, чтобы добавить позицию.')}
   `;
   const s=$('#gsearch'); s.oninput=e=>{goodsQuery=e.target.value;const pos=e.target.selectionStart;renderGoods();const ns=$('#gsearch');ns.focus();ns.setSelectionRange(pos,pos);};
+  $('#g-create').onclick=()=>openProduct();
+  $('#g-add').onclick=()=>openAddStock();
   v.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openProduct(b.dataset.edit));
   v.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ if(confirm('Удалить товар?')){db.products=db.products.filter(x=>x.id!==b.dataset.del);save();render();} });
 }
@@ -439,6 +460,10 @@ function renderReturns(){
   const cnt=s=>db.returns.filter(r=>r.status===s).length;
   const v=$('#view-returns');
   v.innerHTML=`
+    <div class="actions">
+      <button class="ab primary" id="rc-create">＋ Создать возврат</button>
+      <button class="ab" id="rc-add">＋ Добавить возврат</button>
+    </div>
     <div class="filters">
       ${[['all','Все',db.returns.length],['repair','На ремонт',cnt('repair')],['done','После ремонта',cnt('done')],['parts','Запчасти',cnt('parts')]]
         .map(([k,t,n])=>`<button class="fchip ${f===k?'on':''}" data-f="${k}">${t}${n?' · '+n:''}</button>`).join('')}
@@ -448,7 +473,7 @@ function renderReturns(){
         <div class="top">
           <div>
             <div class="name">${esc(r.name)}</div>
-            <div class="code">${bc()}<span class="mono">${esc(r.barcode)||'без кода'}</span> · <span class="mono">${r.qty} шт</span></div>
+            <div class="code">${bc()}<span class="mono">${esc(r.barcode)||'без кода'}</span> · <span class="mono">${r.qty} шт</span>${r.weight?` · <span class="mono">${fmtKg((+r.qty||0)*(+r.weight||0))} кг</span>`:''}</div>
           </div>
           <span class="pill ${st.c}">${st.t}</span>
         </div>
@@ -461,6 +486,8 @@ function renderReturns(){
       </div>`}).join(''):emptyState('return',f==='all'?'Возвратов нет':'Здесь пусто',f==='all'?'Нажмите «Возврат» вверху, чтобы оформить возврат.':'Нет позиций с этим статусом.')}
   `;
   v.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{retFilter=b.dataset.f;renderReturns();});
+  $('#rc-create').onclick=()=>openReturn();
+  $('#rc-add').onclick=()=>openPickForReturn();
   v.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openReturn(b.dataset.edit));
   v.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ if(confirm('Удалить возврат?')){db.returns=db.returns.filter(x=>x.id!==b.dataset.del);save();render();} });
   v.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{const r=db.returns.find(x=>x.id===b.dataset.id);if(r){r.status=b.dataset.set;save();render();}});
@@ -478,6 +505,7 @@ function renderShip(){
   const v=$('#view-ship');
   v.innerHTML= list.length?list.map(s=>{
     const total=sum(s.items,i=>i.qty), ready=s.status==='ready';
+    const totalW=sum(s.items,i=>(+i.qty||0)*(+i.weight||0));
     return `
     <div class="card">
       <div class="top">
@@ -490,8 +518,9 @@ function renderShip(){
       <div class="counts">
         <div class="chip k0"><div class="v mono">${total}</div><div class="k">Единиц</div></div>
         <div class="chip b"><div class="v mono">${s.items.length}</div><div class="k">Позиций</div></div>
+        ${totalW>0?`<div class="chip"><div class="v mono" style="color:var(--accent-d)">${fmtKg(totalW)}</div><div class="k">Вес фуры, кг</div></div>`:''}
       </div>
-      ${s.items.length?'<div style="margin-top:12px">'+s.items.map(i=>`<div class="ship-item"><span class="nm">${esc(i.name)}<small>ШК: ${esc(i.barcode)||'—'}</small></span><span class="q mono">${i.qty} шт</span></div>`).join('')+'</div>':''}
+      ${s.items.length?'<div style="margin-top:12px">'+s.items.map(i=>`<div class="ship-item"><span class="nm">${esc(i.name)}<small>ШК: ${esc(i.barcode)||'—'}${i.weight?' · '+fmtKg((+i.qty||0)*(+i.weight||0))+' кг':''}</small></span><span class="q mono">${i.qty} шт</span></div>`).join('')+'</div>':''}
       <div class="ship-meta"><span>${fmtDate(s.date)}</span></div>
       <div class="row-actions">
         <button class="mini" data-toggle="${s.id}" style="color:${ready?'var(--amber)':'var(--green)'};border-color:${ready?'var(--amber)':'var(--green)'}33">${ready?'Вернуть на сборку':'Отметить готовой'}</button>
@@ -569,6 +598,53 @@ function openSheet(html){ sheet.innerHTML='<div class="grab"></div>'+html; overl
 function closeSheet(){ overlay.classList.remove('show'); document.body.style.overflow=''; }
 overlay.onclick=e=>{ if(e.target===overlay)closeSheet(); };
 
+function openGoodsMenu(){
+  openSheet(`
+    <h2>Добавить товар</h2>
+    <button class="opt primary" id="m-create"><div class="ot">Создать новый товар</div><div class="od">Название, вес 1 шт и количество</div></button>
+    <button class="opt" id="m-add"><div class="ot">Добавить к существующему</div><div class="od">Выбрать товар из списка и докинуть штук</div></button>
+  `);
+  $('#m-create').onclick=()=>openProduct();
+  $('#m-add').onclick=()=>openAddStock();
+}
+function openAddStock(){
+  if(!db.products.length){
+    openSheet(`<h2>Добавить на склад</h2><div class="empty" style="padding:24px 8px"><div class="d">Сначала создайте товар.</div></div><button class="save" id="m-create2">Создать товар</button>`);
+    $('#m-create2').onclick=()=>openProduct(); return;
+  }
+  openSheet(`
+    <h2>Добавить на склад</h2>
+    <div class="search" style="margin-top:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg><input id="as-q" placeholder="Поиск товара" inputmode="search"></div>
+    <div id="as-list"></div>
+  `);
+  function drawList(q){
+    q=(q||'').trim().toLowerCase();
+    const list=db.products.filter(p=>!q||p.name.toLowerCase().includes(q)||p.barcode.includes(q));
+    $('#as-list').innerHTML=list.length?list.map(p=>`
+      <button class="opt" data-pick="${p.id}"><div class="ot">${esc(p.name)}</div><div class="od">На складе: ${p.qty} шт${p.weight?' · '+fmtKg(p.weight)+' кг/шт':''}</div></button>
+    `).join(''):'<div class="empty" style="padding:20px"><div class="d">Ничего не найдено</div></div>';
+    $('#as-list').querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>openAddQty(b.dataset.pick));
+  }
+  drawList();
+  $('#as-q').oninput=e=>drawList(e.target.value);
+}
+function openAddQty(pid){
+  const p=db.products.find(x=>x.id===pid); if(!p)return;
+  openSheet(`
+    <h2>Добавить на склад</h2>
+    <div style="font-weight:700;font-size:17px;margin-bottom:2px">${esc(p.name)}</div>
+    <div style="color:var(--soft);font-size:13px">Сейчас на складе: ${p.qty} шт</div>
+    <label class="fl">Сколько добавить, шт</label>
+    <input class="inp mono" id="aq-n" inputmode="numeric" value="1">
+    <button class="save" id="aq-save">Добавить</button>
+  `);
+  $('#aq-save').onclick=()=>{
+    const n=+$('#aq-n').value||0; if(n<=0)return alert('Укажите количество');
+    p.qty=(+p.qty||0)+n; save(); closeSheet();
+    if(tab!=='goods')switchTab('goods'); else render();
+  };
+}
+
 function openProduct(pid){
   const p=pid?db.products.find(x=>x.id===pid):null;
   let photo=p?(p.photo||''):'';
@@ -587,9 +663,12 @@ function openProduct(pid){
     <input class="inp" id="f-name" value="${p?esc(p.name):''}" placeholder="Напр. Наушники TWS Pro">
     <label class="fl">Штрих-код</label>
     <input class="inp mono" id="f-bc" inputmode="numeric" value="${p?esc(p.barcode):''}" placeholder="4600000000000">
-    <label class="fl">Количество</label>
-    <input class="inp mono" id="f-qty" inputmode="numeric" value="${p?p.qty:0}">
-    <button class="save" id="f-save">${p?'Сохранить':'Добавить товар'}</button>
+    <div class="two">
+      <div><label class="fl">Вес 1 шт, кг</label><input class="inp mono" id="f-w" inputmode="decimal" value="${p&&p.weight?fmtKg(p.weight):''}" placeholder="0,2"></div>
+      <div><label class="fl">Количество, шт</label><input class="inp mono" id="f-qty" inputmode="numeric" value="${p?p.qty:0}"></div>
+    </div>
+    <div id="f-total" style="font-size:13.5px;color:var(--soft);font-weight:600;margin-top:11px"></div>
+    <button class="save" id="f-save">${p?'Сохранить':'Создать товар'}</button>
   `);
   const pbox=$('#f-pbox'), prm=$('#f-prm');
   $('#f-photo').onchange=async e=>{
@@ -599,26 +678,49 @@ function openProduct(pid){
     catch(err){ pbox.innerHTML=photoIcon(34); alert('Не удалось загрузить фото'); }
   };
   prm.onclick=()=>{ photo=''; pbox.innerHTML=photoIcon(34); prm.style.display='none'; $('#f-photo').value=''; };
+  const updTotal=()=>{const w=num($('#f-w').value),q=+$('#f-qty').value||0;$('#f-total').textContent=(w>0&&q>0)?`Общий вес: ${fmtKg(w*q)} кг  ·  ${q} шт × ${fmtKg(w)} кг`:'';};
+  $('#f-w').oninput=updTotal; $('#f-qty').oninput=updTotal; updTotal();
   $('#f-save').onclick=()=>{
     const name=$('#f-name').value.trim(); if(!name)return alert('Укажите название');
-    const o={name,barcode:$('#f-bc').value.trim(),qty:+$('#f-qty').value||0,photo};
+    const o={name,barcode:$('#f-bc').value.trim(),weight:num($('#f-w').value),qty:+$('#f-qty').value||0,photo};
     if(p)Object.assign(p,o); else db.products.unshift({id:id(),...o});
     save();closeSheet();render();
   };
 }
 
-function openReturn(rid){
+function openPickForReturn(){
+  if(!db.products.length){ openReturn(); return; }
+  openSheet(`
+    <h2>Добавить возврат</h2>
+    <div class="search" style="margin-top:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg><input id="pr-q" placeholder="Поиск товара" inputmode="search"></div>
+    <div id="pr-list"></div>
+  `);
+  function drawList(q){
+    q=(q||'').trim().toLowerCase();
+    const list=db.products.filter(p=>!q||p.name.toLowerCase().includes(q)||p.barcode.includes(q));
+    $('#pr-list').innerHTML=list.length?list.map(p=>`<button class="opt" data-pick="${p.id}"><div class="ot">${esc(p.name)}</div><div class="od">${esc(p.barcode)||'без кода'}${p.weight?' · '+fmtKg(p.weight)+' кг/шт':''}</div></button>`).join(''):'<div class="empty" style="padding:20px"><div class="d">Ничего не найдено</div></div>';
+    $('#pr-list').querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{const p=db.products.find(x=>x.id===b.dataset.pick);openReturn(null,{name:p.name,barcode:p.barcode,weight:p.weight});});
+  }
+  drawList();
+  $('#pr-q').oninput=e=>drawList(e.target.value);
+}
+
+function openReturn(rid,prefill){
   const r=rid?db.returns.find(x=>x.id===rid):null;
-  const opts=db.products.map(p=>`<option value="${esc(p.name)}" data-bc="${esc(p.barcode)}">`).join('');
+  const base=r||prefill||{};
+  const opts=db.products.map(p=>`<option value="${esc(p.name)}" data-bc="${esc(p.barcode)}" data-w="${p.weight||''}">`).join('');
   openSheet(`
     <h2>${r?'Изменить возврат':'Новый возврат'}</h2>
     <label class="fl">Название товара</label>
-    <input class="inp" id="r-name" list="prodlist" value="${r?esc(r.name):''}" placeholder="Название товара">
+    <input class="inp" id="r-name" list="prodlist" value="${esc(base.name||'')}" placeholder="Название товара">
     <datalist id="prodlist">${opts}</datalist>
+    <label class="fl">Штрих-код</label>
+    <input class="inp mono" id="r-bc" inputmode="numeric" value="${esc(base.barcode||'')}">
     <div class="two">
-      <div><label class="fl">Штрих-код</label><input class="inp mono" id="r-bc" inputmode="numeric" value="${r?esc(r.barcode):''}"></div>
-      <div><label class="fl">Количество</label><input class="inp mono" id="r-qty" inputmode="numeric" value="${r?r.qty:1}"></div>
+      <div><label class="fl">Вес 1 шт, кг</label><input class="inp mono" id="r-w" inputmode="decimal" value="${base.weight?fmtKg(base.weight):''}" placeholder="0,2"></div>
+      <div><label class="fl">Количество, шт</label><input class="inp mono" id="r-qty" inputmode="numeric" value="${r?r.qty:1}"></div>
     </div>
+    <div id="r-total" style="font-size:13.5px;color:var(--soft);font-weight:600;margin-top:11px"></div>
     <label class="fl">Статус</label>
     <div class="seg" id="r-seg">
       ${[['repair','На ремонт'],['done','После ремонта'],['parts','Запчасти']].map(([k,t])=>`<button data-v="${k}" class="${(r?r.status:'repair')===k?'on':''}">${t}</button>`).join('')}
@@ -627,10 +729,12 @@ function openReturn(rid){
   `);
   let status=r?r.status:'repair';
   $('#r-seg').querySelectorAll('button').forEach(b=>b.onclick=()=>{status=b.dataset.v;$('#r-seg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));});
-  $('#r-name').onchange=e=>{const o=[...document.querySelectorAll('#prodlist option')].find(x=>x.value===e.target.value);if(o&&!$('#r-bc').value)$('#r-bc').value=o.dataset.bc;};
+  $('#r-name').onchange=e=>{const o=[...document.querySelectorAll('#prodlist option')].find(x=>x.value===e.target.value);if(o){if(!$('#r-bc').value)$('#r-bc').value=o.dataset.bc;if(!$('#r-w').value&&o.dataset.w)$('#r-w').value=(+o.dataset.w).toLocaleString('ru-RU');updTotal();}};
+  const updTotal=()=>{const w=num($('#r-w').value),q=+$('#r-qty').value||0;$('#r-total').textContent=(w>0&&q>0)?`Общий вес: ${fmtKg(w*q)} кг`:'';};
+  $('#r-w').oninput=updTotal; $('#r-qty').oninput=updTotal; updTotal();
   $('#r-save').onclick=()=>{
     const name=$('#r-name').value.trim(); if(!name)return alert('Укажите товар');
-    const o={name,barcode:$('#r-bc').value.trim(),qty:+$('#r-qty').value||1,status};
+    const o={name,barcode:$('#r-bc').value.trim(),weight:num($('#r-w').value),qty:+$('#r-qty').value||1,status};
     if(r)Object.assign(r,o); else db.returns.unshift({id:id(),date:Date.now(),...o});
     save();closeSheet();render();
   };
@@ -639,9 +743,10 @@ function openReturn(rid){
 function openShip(sid){
   const s=sid?db.shipments.find(x=>x.id===sid):null;
   let items=s?JSON.parse(JSON.stringify(s.items)):[];
-  const opts=db.products.map(p=>`<option value="${esc(p.name)}" data-bc="${esc(p.barcode)}">`).join('');
+  const opts=db.products.map(p=>`<option value="${esc(p.name)}" data-bc="${esc(p.barcode)}" data-w="${p.weight||''}">`).join('');
   let status=s?s.status:'assembling';
   function draw(keep){
+    const itemsW=sum(items,i=>(+i.qty||0)*(+i.weight||0));
     openSheet(`
       <h2>${s?'Изменить фуру':'Новая фура'}</h2>
       <div class="two">
@@ -655,8 +760,8 @@ function openShip(sid){
         <button data-v="assembling" class="${status==='assembling'?'on':''}">На сборке</button>
         <button data-v="ready" class="${status==='ready'?'on':''}">Готова</button>
       </div>
-      <label class="fl">Товары в фуре</label>
-      <div id="s-items">${items.length?items.map((i,idx)=>`<div class="ship-item"><span class="nm">${esc(i.name)}<small>ШК: ${esc(i.barcode)||'—'}</small></span><span class="q mono">${i.qty} шт</span><span class="x" data-rm="${idx}">×</span></div>`).join(''):'<div style="color:var(--soft);font-size:13px;padding:4px 2px 8px">Пока пусто</div>'}</div>
+      <label class="fl">Товары в фуре${itemsW>0?' · '+fmtKg(itemsW)+' кг':''}</label>
+      <div id="s-items">${items.length?items.map((i,idx)=>`<div class="ship-item"><span class="nm">${esc(i.name)}<small>ШК: ${esc(i.barcode)||'—'}${i.weight?' · '+fmtKg((+i.qty||0)*(+i.weight||0))+' кг':''}</small></span><span class="q mono">${i.qty} шт</span><span class="x" data-rm="${idx}">×</span></div>`).join(''):'<div style="color:var(--soft);font-size:13px;padding:4px 2px 8px">Пока пусто</div>'}</div>
       <label class="fl">Добавить товар</label>
       <input class="inp" id="s-iname" list="prodlist2" placeholder="Название товара"><datalist id="prodlist2">${opts}</datalist>
       <div class="two" style="margin-top:10px;align-items:flex-end">
@@ -669,7 +774,7 @@ function openShip(sid){
     if(keep){ $('#s-city').value=keep.c;$('#s-truck').value=keep.t;$('#s-driver').value=keep.d; }
     $('#s-seg').querySelectorAll('button').forEach(b=>b.onclick=()=>{status=b.dataset.v;$('#s-seg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));});
     $('#s-iname').onchange=e=>{const o=[...document.querySelectorAll('#prodlist2 option')].find(x=>x.value===e.target.value);if(o)$('#s-ibc').value=o.dataset.bc;};
-    $('#s-add').onclick=()=>{const n=$('#s-iname').value.trim();const q=+$('#s-iqty').value||0;if(!n||q<=0)return alert('Укажите товар и количество');items.push({name:n,barcode:$('#s-ibc').value.trim(),qty:q});draw({c:$('#s-city').value,t:$('#s-truck').value,d:$('#s-driver').value});};
+    $('#s-add').onclick=()=>{const n=$('#s-iname').value.trim();const q=+$('#s-iqty').value||0;if(!n||q<=0)return alert('Укажите товар и количество');const bcv=$('#s-ibc').value.trim();const prod=db.products.find(x=>(bcv&&x.barcode===bcv)||x.name===n);const w=prod?(+prod.weight||0):0;items.push({name:n,barcode:bcv,qty:q,weight:w});draw({c:$('#s-city').value,t:$('#s-truck').value,d:$('#s-driver').value});};
     document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{items.splice(+b.dataset.rm,1);draw({c:$('#s-city').value,t:$('#s-truck').value,d:$('#s-driver').value});});
     $('#s-save').onclick=()=>{
       const city=$('#s-city').value.trim(); if(!city)return alert('Укажите город');
