@@ -319,6 +319,7 @@ function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(mem));}catch(e)
 function save(){ saveLocal(); if(cloudOn)cloudPush(); }
 function setStatus(txt,color){ const s=document.getElementById('appsub'); if(s){ s.textContent=txt; s.style.color=color||''; } }
 function cloudError(msg){ setStatus('⚠ '+msg, '#ff8c8c'); }
+function withTimeout(p,ms){ ms=ms||9000; return Promise.race([Promise.resolve(p), new Promise((_,rej)=>setTimeout(()=>rej(new Error('нет ответа от сервера ('+(ms/1000)+' сек) — связь блокируется (расширение браузера, антивирус, файрвол или сеть)')),ms))]); }
 const APP_VERSION='v8';
 let diagResults=null, diagRunning=false;
 async function runDiag(){
@@ -328,11 +329,11 @@ async function runDiag(){
   push('Ключи сервера вписаны',true);
   if(!supa){ push('Связь с сервером',false,'не подключается — интернет к серверу блокируется (расширение браузера, файрвол или сеть)'); diagResults=r; diagRunning=false; renderHome(); return; }
   push('Связь с сервером',true);
-  try{ const {error}=await supa.from('warehouse').select('id').limit(1); if(error)throw error; push('Чтение склада',true); }
+  try{ const {error}=await withTimeout(supa.from('warehouse').select('id').limit(1)); if(error)throw error; push('Чтение склада',true); }
   catch(e){ push('Чтение склада',false,e.message||(''+e)); }
-  try{ const {error}=await supa.from('warehouse').upsert({id:1,data:{products:db.products,returns:db.returns,shipments:db.shipments},updated_at:new Date().toISOString()}); if(error)throw error; push('Запись склада (главное!)',true); }
+  try{ const {error}=await withTimeout(supa.from('warehouse').upsert({id:1,data:{products:db.products,returns:db.returns,shipments:db.shipments},updated_at:new Date().toISOString()})); if(error)throw error; push('Запись склада (главное!)',true); }
   catch(e){ push('Запись склада (главное!)',false,e.message||(''+e)); }
-  try{ const {error}=await supa.from('messages').select('id').limit(1); if(error)throw error; push('Чат',true); }
+  try{ const {error}=await withTimeout(supa.from('messages').select('id').limit(1)); if(error)throw error; push('Чат',true); }
   catch(e){ push('Чат',false,e.message||(''+e)); }
   diagResults=r; diagRunning=false; renderHome();
 }
@@ -343,7 +344,7 @@ async function cloudPush(){
 }
 async function cloudLoadWarehouse(){
   try{
-    const {data,error}=await supa.from('warehouse').select('data').eq('id',1).maybeSingle();
+    const {data,error}=await withTimeout(supa.from('warehouse').select('data').eq('id',1).maybeSingle());
     if(error)throw error;
     if(data&&data.data){ db.products=data.data.products||[]; db.returns=data.data.returns||[]; db.shipments=data.data.shipments||[]; saveLocal(); render(); }
     else { const up=await supa.from('warehouse').upsert({id:1,data:{products:db.products,returns:db.returns,shipments:db.shipments}}); if(up.error)throw up.error; }
@@ -707,7 +708,7 @@ async function initCloud(){
     await cloudLoadWarehouse();
     supa.channel('wh').on('postgres_changes',{event:'*',schema:'public',table:'warehouse'},()=>cloudLoadWarehouse()).subscribe();
     // ЧАТ
-    const {data,error}=await supa.from('messages').select('*').order('created_at',{ascending:true}).limit(300);
+    const {data,error}=await withTimeout(supa.from('messages').select('*').order('created_at',{ascending:true}).limit(300));
     if(error)throw error;
     chatMsgs=(data||[]).map(mapMsg);
     renderChat(); if(tab==='chat')scrollChat();
