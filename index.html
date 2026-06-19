@@ -61,6 +61,19 @@
   .stat.wide .num{font-size:34px}
   .section-h{font-size:13px;font-weight:700;color:var(--soft);text-transform:uppercase;
     letter-spacing:.06em;margin:24px 4px 12px}
+  .srv{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:14px;box-shadow:var(--shadow)}
+  .srv-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .srv-t{font-weight:700;font-size:14px}
+  .srv-v{color:var(--soft);font-weight:600;font-size:11px;margin-left:4px}
+  .srv-btn{background:var(--ink);color:#fff;font-weight:700;font-size:12px;padding:8px 14px;border-radius:9px}
+  .srv-btn:active{opacity:.8}
+  .srv-hint{font-size:12px;color:var(--soft);margin-top:8px}
+  .srv-list{margin-top:11px;display:flex;flex-direction:column;gap:8px}
+  .srv-row{display:flex;align-items:flex-start;gap:8px;font-size:13.5px}
+  .srv-ic{font-weight:800;width:15px;flex-shrink:0;line-height:1.3}
+  .srv-ic.ok{color:var(--green)} .srv-ic.no{color:var(--red)}
+  .srv-n{font-weight:600}
+  .srv-n small{display:block;color:var(--red);font-weight:500;font-size:11.5px;margin-top:2px;word-break:break-word}
 
   .search{display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--line);
     border-radius:13px;padding:12px 14px;box-shadow:var(--shadow);margin-bottom:14px}
@@ -306,6 +319,23 @@ function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(mem));}catch(e)
 function save(){ saveLocal(); if(cloudOn)cloudPush(); }
 function setStatus(txt,color){ const s=document.getElementById('appsub'); if(s){ s.textContent=txt; s.style.color=color||''; } }
 function cloudError(msg){ setStatus('⚠ '+msg, '#ff8c8c'); }
+const APP_VERSION='v8';
+let diagResults=null, diagRunning=false;
+async function runDiag(){
+  diagRunning=true; renderHome();
+  const r=[]; const push=(name,ok,detail)=>r.push({name,ok,detail:detail||''});
+  if(!CONFIG.supabaseUrl||!CONFIG.supabaseKey){ push('Ключи сервера вписаны',false,'в файле пусто'); diagResults=r; diagRunning=false; renderHome(); return; }
+  push('Ключи сервера вписаны',true);
+  if(!supa){ push('Связь с сервером',false,'не подключается — интернет к серверу блокируется (расширение браузера, файрвол или сеть)'); diagResults=r; diagRunning=false; renderHome(); return; }
+  push('Связь с сервером',true);
+  try{ const {error}=await supa.from('warehouse').select('id').limit(1); if(error)throw error; push('Чтение склада',true); }
+  catch(e){ push('Чтение склада',false,e.message||(''+e)); }
+  try{ const {error}=await supa.from('warehouse').upsert({id:1,data:{products:db.products,returns:db.returns,shipments:db.shipments},updated_at:new Date().toISOString()}); if(error)throw error; push('Запись склада (главное!)',true); }
+  catch(e){ push('Запись склада (главное!)',false,e.message||(''+e)); }
+  try{ const {error}=await supa.from('messages').select('id').limit(1); if(error)throw error; push('Чат',true); }
+  catch(e){ push('Чат',false,e.message||(''+e)); }
+  diagResults=r; diagRunning=false; renderHome();
+}
 async function cloudPush(){
   if(!cloudOn)return;
   try{ const {error}=await supa.from('warehouse').upsert({id:1,data:{products:db.products,returns:db.returns,shipments:db.shipments},updated_at:new Date().toISOString()}); if(error)throw error; }
@@ -437,6 +467,13 @@ function renderHome(){
   const assembling=db.shipments.filter(s=>s.status==='assembling').length;
   const ready=db.shipments.filter(s=>s.status==='ready').length;
   $('#view-home').innerHTML=`
+    <div class="srv">
+      <div class="srv-top">
+        <div class="srv-t">Сервер ${cloudOn?'✓':'—'} <span class="srv-v">${APP_VERSION}</span></div>
+        <button class="srv-btn" id="diagBtn">${diagRunning?'Проверяю…':'Проверить'}</button>
+      </div>
+      ${diagResults?('<div class="srv-list">'+diagResults.map(x=>`<div class="srv-row"><span class="srv-ic ${x.ok?'ok':'no'}">${x.ok?'✓':'✕'}</span><span class="srv-n">${esc(x.name)}${x.detail?`<small>${esc(x.detail)}</small>`:''}</span></div>`).join('')+'</div>'):'<div class="srv-hint">Нажми «Проверить» — покажет, что работает, а что нет.</div>'}
+    </div>
     <div class="grid">
       <div class="stat"><div class="num mono">${stock}</div><div class="lab">Всего на складе, шт · ${p.length} наимен.</div></div>
       <div class="stat"><div class="num mono">${fmtKg(weight)}</div><div class="lab">Общий вес, кг</div></div>
@@ -454,6 +491,7 @@ function renderHome(){
       <div class="stat"><span class="tag" style="background:var(--green)"></span><div class="num mono">${ready}</div><div class="lab">Готовы к отправке</div></div>
     </div>
   `;
+  const db2=document.getElementById('diagBtn'); if(db2)db2.onclick=runDiag;
 }
 
 function renderGoods(){
@@ -882,7 +920,7 @@ function openShip(sid){
 }
 
 render();
-initCloud();
+initCloud().finally(()=>{ runDiag(); });
 </script>
 </body>
 </html>
