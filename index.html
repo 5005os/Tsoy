@@ -1,128 +1,189 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>СКЛАД ЦОЙ</title>
-    <style>
-        body { font-family: 'Inter', sans-serif; background: #ECEEF1; margin: 0; padding-bottom: 70px; }
-        .header { background: #15171C; color: white; padding: 20px; text-align: center; }
-        .container { max-width: 600px; margin: 20px auto; padding: 0 15px; }
-        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        input, button { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px; }
-        button { background: #FF5A1F; color: white; border: none; font-weight: bold; cursor: pointer; }
-        .photo-preview { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; margin-top: 5px; display: none; }
-        .login-screen { position: fixed; inset: 0; background: #15171C; color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; }
-        .hidden { display: none; }
-        h2 { margin-top: 0; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>СКЛАД ЦОЙ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#ECEEF1;--paper:#FFF;--ink:#15171C;--soft:#5A6170;--line:#E2E5EA;--accent:#FF5A1F;--tab-h:64px}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);margin:0;padding-bottom:var(--tab-h)}
+  .appbar{background:var(--ink);color:#fff;padding:16px;display:flex;justify-content:space-between;align-items:center}
+  .view{display:none;padding:16px}.view.active{display:block}
+  .card{background:var(--paper);padding:14px;border-radius:12px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+  .inp{width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;margin-bottom:10px;font-size:16px}
+  .btn{background:var(--accent);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-weight:700;width:100%;font-size:16px;margin-top:10px}
+  .tabbar{position:fixed;bottom:0;left:0;right:0;height:var(--tab-h);background:#fff;border-top:1px solid var(--line);display:flex}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:#999}
+  .tab.on{color:var(--accent)}
+  .login{position:fixed;inset:0;background:var(--ink);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:100}
+  .login.hide{display:none}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px}
+  .stat-box{background:#fff;padding:15px;border-radius:10px;text-align:center}
+  .stat-num{font-size:24px;font-weight:800;color:var(--accent)}
+  .msg-img{max-width:200px;border-radius:8px;margin-top:5px}
+  .chat-msg{margin-bottom:10px;padding:8px;background:#f9f9f9;border-radius:8px}
+</style>
 </head>
 <body>
 
 <!-- ВХОД -->
-<div id="login" class="login-screen">
-    <h1>СКЛАД ЦОЙ</h1>
-    <div style="width: 300px;">
-        <input type="text" id="lg-login" placeholder="Логин (Николай)" style="background:#2c2f37; color:white; border:#444">
-        <input type="password" id="lg-pass" placeholder="Пароль (Цой2026)" style="background:#2c2f37; color:white; border:#444">
-        <button onclick="checkLogin()">Войти</button>
-    </div>
+<div class="login" id="login">
+  <h1>СКЛАД ЦОЙ</h1>
+  <input id="lg-login" class="inp" placeholder="Логин (Николай)" style="background:#2c2f37;color:#fff;border-color:#444">
+  <input id="lg-pass" type="password" class="inp" placeholder="Пароль (Цой2026)" style="background:#2c2f37;color:#fff;border-color:#444">
+  <button class="btn" onclick="doLogin()">Войти</button>
+  <div id="lg-err" style="color:#ff8c8c;margin-top:10px"></div>
 </div>
 
-<!-- ПРИЛОЖЕНИЕ -->
-<div id="app" class="hidden">
-    <div class="header"><h2>СКЛАД ЦОЙ</h2></div>
+<header class="appbar">
+  <div><b>СКЛАД ЦОЙ</b></div>
+  <div id="status" style="font-size:12px;color:#aaa">Загрузка...</div>
+</header>
+
+<main class="view active" id="view-home">
+  <div class="stat-grid">
+    <div class="stat-box"><div class="stat-num" id="total-prod">0</div><div>Товаров</div></div>
+    <div class="stat-box"><div class="stat-num" id="total-ret">0</div><div>Возвратов</div></div>
+  </div>
+  <button class="btn" onclick="openAddProduct()">＋ Добавить товар</button>
+</main>
+
+<main class="view" id="view-goods"></main>
+<main class="view" id="view-chat">
+  <div id="chat-list"></div>
+  <div style="display:flex;gap:5px;margin-top:10px">
+    <input id="chat-input" class="inp" placeholder="Сообщение..." style="margin:0">
+    <button class="btn" style="width:50px;margin:0" onclick="sendChat()">➤</button>
+  </div>
+</main>
+
+<nav class="tabbar">
+  <button class="tab on" onclick="switchTab('home')">🏠 Главная</button>
+  <button class="tab" onclick="switchTab('goods')">📦 Товары</button>
+  <button class="tab" onclick="switchTab('chat')">💬 Чат</button>
+</nav>
+
+<script type="module">
+  // --- ТВОЙ СЕРВЕР (БЕЗ SUPABASE) ---
+  import PocketBase from 'https://cdn.jsdelivr.net/npm/pocketbase@0.21.0/+esm';
+  const pb = new PocketBase('http://mytest1234test1234.ru');
+  
+  const USERS = [{login:'Аза',pass:'909010'},{login:'Николай',pass:'Цой2026'},{login:'Юлия',pass:'Склад1'}];
+  let currentUser = null;
+  let db = {products:[], returns:[]};
+  let warehouseDocId = null;
+
+  // --- ВХОД ---
+  window.doLogin = async function() {
+    const l = document.getElementById('lg-login').value.trim();
+    const p = document.getElementById('lg-pass').value;
+    const u = USERS.find(x => x.login.toLowerCase() === l.toLowerCase() && x.pass === p);
     
-    <div class="container">
-        <!-- Форма добавления -->
-        <div class="card">
-            <h3>Новый товар</h3>
-            <input type="text" id="p-name" placeholder="Название товара">
-            <input type="number" id="p-qty" placeholder="Количество">
-            <label style="font-size:12px; color:#666">Фото товара:</label>
-            <input type="file" id="p-file" accept="image/*" onchange="previewFile()">
-            <img id="preview" class="photo-preview">
-            <button onclick="addProduct()">Добавить в список</button>
-        </div>
+    if (!u) { document.getElementById('lg-err').textContent = 'Неверный логин или пароль'; return; }
+    
+    currentUser = u;
+    document.getElementById('login').classList.add('hide');
+    document.querySelector('.appbar div:first-child').innerHTML = `<b>СКЛАД ЦОЙ</b> (${u.login})`;
+    await syncData();
+  };
 
-        <!-- Список товаров -->
-        <div id="product-list"></div>
-    </div>
-</div>
-
-<script>
-    // Простая проверка входа
-    function checkLogin() {
-        const l = document.getElementById('lg-login').value;
-        const p = document.getElementById('lg-pass').value;
-        if ((l === 'Николай' && p === 'Цой2026') || (l === 'Аза' && p === '909010')) {
-            document.getElementById('login').classList.add('hidden');
-            document.getElementById('app').classList.remove('hidden');
-            loadProducts();
-        } else {
-            alert("Неверный логин или пароль!");
-        }
+  // --- СИНХРОНИЗАЦИЯ С ТВОИМ СЕРВЕРОМ ---
+  async function syncData() {
+    try {
+      // Пытаемся найти запись склада
+      const list = await pb.collection('warehouse').getList(1, 1);
+      if (list.items.length > 0) {
+        warehouseDocId = list.items[0].id;
+        const remote = JSON.parse(list.items[0].data || '{}');
+        db = remote;
+        if(!db.products) db.products = [];
+        if(!db.returns) db.returns = [];
+      } else {
+        // Если базы нет, создаем её
+        const doc = await pb.collection('warehouse').create({ data: JSON.stringify(db) });
+        warehouseDocId = doc.id;
+      }
+      document.getElementById('status').textContent = '● Сервер подключен';
+      document.getElementById('status').style.color = '#6ee7a0';
+      render();
+    } catch (e) {
+      console.error(e);
+      document.getElementById('status').textContent = '⚠ Ошибка связи';
     }
+  }
 
-    // Предпросмотр фото
-    let currentPhoto = "";
-    function previewFile() {
-        const file = document.getElementById('p-file').files[0];
-        const reader = new FileReader();
-        reader.onloadend = function() {
-            document.getElementById('preview').src = reader.result;
-            document.getElementById('preview').style.display = 'block';
-            currentPhoto = reader.result; // Сохраняем фото в память
-        }
-        if (file) reader.readAsDataURL(file);
+  // --- СОХРАНЕНИЕ ---
+  async function saveToCloud() {
+    if (!warehouseDocId) return;
+    try { await pb.collection('warehouse').update(warehouseDocId, { data: JSON.stringify(db) }); } 
+    catch (e) { alert('Ошибка сохранения: ' + e.message); }
+  }
+
+  // --- ТОВАРЫ ---
+  window.openAddProduct = function() {
+    const name = prompt("Название товара:");
+    if (!name) return;
+    const qty = prompt("Количество:", "1");
+    
+    db.products.push({ id: Date.now().toString(), name: name, qty: parseInt(qty) || 0 });
+    saveToCloud();
+    render();
+  };
+
+  // --- ЧАТ (простой, через ту же базу для надежности) ---
+  window.sendChat = async function() {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    // Добавляем сообщение в общую базу
+    try {
+      await pb.collection('messages').create({
+        login: currentUser.login,
+        text: text,
+        created_at: new Date().toISOString()
+      });
+      input.value = '';
+      loadChat();
+    } catch (e) { alert('Ошибка чата: ' + e.message); }
+  };
+
+  async function loadChat() {
+    try {
+      const msgs = await pb.collection('messages').getList(1, 50, { sort: '-created_at' });
+      const list = document.getElementById('chat-list');
+      list.innerHTML = msgs.items.map(m => 
+        `<div class="chat-msg"><b>${m.login}:</b> ${m.text}</div>`
+      ).join('');
+    } catch (e) {}
+  }
+
+  // --- РЕНДЕР ---
+  function render() {
+    document.getElementById('total-prod').textContent = db.products.length;
+    document.getElementById('total-ret').textContent = db.returns.length;
+    
+    const goodsHtml = db.products.map(p => 
+      `<div class="card"><b>${p.name}</b><br>На складе: ${p.qty} шт</div>`
+    ).join('');
+    document.getElementById('view-goods').innerHTML = goodsHtml || '<div class="card">Товаров нет</div>';
+    
+    if (document.getElementById('view-chat').classList.contains('active')) {
+      loadChat();
     }
+  }
 
-    // Добавление товара
-    function addProduct() {
-        const name = document.getElementById('p-name').value;
-        const qty = document.getElementById('p-qty').value;
-        
-        if (!name) return alert("Введите название!");
-
-        const product = {
-            name: name,
-            qty: qty,
-            photo: currentPhoto,
-            date: new Date().toLocaleDateString()
-        };
-
-        // Сохраняем в память браузера
-        let products = JSON.parse(localStorage.getItem('sklad_products') || '[]');
-        products.push(product);
-        localStorage.setItem('sklad_products', JSON.stringify(products));
-
-        // Очищаем форму
-        document.getElementById('p-name').value = '';
-        document.getElementById('p-qty').value = '';
-        document.getElementById('p-file').value = '';
-        document.getElementById('preview').style.display = 'none';
-        currentPhoto = "";
-        
-        loadProducts();
-    }
-
-    // Загрузка списка
-    function loadProducts() {
-        const list = document.getElementById('product-list');
-        const products = JSON.parse(localStorage.getItem('sklad_products') || '[]');
-        
-        list.innerHTML = products.map(p => `
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center">
-                    <b>${p.name}</b>
-                    <span style="color:#FF5A1F; font-weight:bold">${p.qty} шт.</span>
-                </div>
-                ${p.photo ? `<img src="${p.photo}" style="width:100%; border-radius:8px; margin-top:10px">` : ''}
-                <div style="font-size:12px; color:#999; margin-top:5px">Добавлено: ${p.date}</div>
-            </div>
-        `).join('');
-    }
+  // --- НАВИГАЦИЯ ---
+  window.switchTab = function(tabName) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + tabName).classList.add('active');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+    event.target.closest('.tab').classList.add('on');
+    if (tabName === 'chat') loadChat();
+  };
 </script>
-
 </body>
 </html>
