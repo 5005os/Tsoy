@@ -4,244 +4,126 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>СКЛАД ЦОЙ</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#ECEEF1; --paper:#FFFFFF; --ink:#15171C; --soft:#5A6170;
-    --line:#E2E5EA; --accent:#FF5A1F; --accent-d:#E64910;
-    --blue:#2563EB; --green:#16A34A; --red:#E11D48;
-    --purple:#7C3AED; --amber:#D97706; --slate:#64748B;
-    --shadow:0 1px 2px rgba(20,23,28,.06),0 8px 24px rgba(20,23,28,.05);
-    --tab-h:64px;
-  }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;padding:0}
-  body{
-    font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);
-    -webkit-font-smoothing:antialiased;padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom));
-    overscroll-behavior-y:none;
-  }
-  .mono{font-family:'JetBrains Mono',ui-monospace,monospace}
-  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-  .appbar{position:sticky;top:0;z-index:30;background:var(--ink);color:#fff;padding:calc(env(safe-area-inset-top) + 14px) 16px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .appbar h1{font-size:18px;font-weight:800;margin:0;letter-spacing:.04em;display:flex;align-items:center;gap:9px}
-  .appbar h1 .bars{display:inline-flex;gap:2px;align-items:flex-end;height:18px}
-  .appbar h1 .bars i{display:block;width:2px;background:var(--accent);border-radius:1px}
-  .appbar .sub{font-size:11px;color:#9aa1ad;font-weight:500;margin-top:2px}
-  .bar-right{display:flex;align-items:center;gap:8px}
-  .add-btn{background:var(--accent);color:#fff;font-weight:700;font-size:13px;padding:9px 12px;border-radius:11px;display:none;align-items:center;gap:5px;box-shadow:0 4px 12px rgba(255,90,31,.35)}
-  .add-btn:active{background:var(--accent-d)}
-  .add-btn svg{width:15px;height:15px}
-  .avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center}
-  .view{display:none;padding:16px 14px 24px}
-  .view.active{display:block;animation:fade .18s ease}
-  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .stat{background:var(--paper);border-radius:16px;padding:14px;box-shadow:var(--shadow);border:1px solid var(--line);position:relative;overflow:hidden}
-  .stat .num{font-size:30px;font-weight:700;line-height:1;letter-spacing:-.01em}
-  .stat .lab{font-size:12px;color:var(--soft);font-weight:600;margin-top:7px}
-  .stat .tag{position:absolute;top:14px;right:14px;width:9px;height:9px;border-radius:50%}
-  .srv{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:14px;box-shadow:var(--shadow)}
-  .srv-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .srv-t{font-weight:700;font-size:14px}
-  .srv-v{color:var(--soft);font-weight:600;font-size:11px;margin-left:4px}
-  .srv-btn{background:var(--ink);color:#fff;font-weight:700;font-size:12px;padding:8px 14px;border-radius:9px}
-  .srv-list{margin-top:11px;display:flex;flex-direction:column;gap:8px}
-  .srv-row{display:flex;align-items:flex-start;gap:8px;font-size:13.5px}
-  .srv-ic{font-weight:800;width:15px;flex-shrink:0;line-height:1.3}
-  .srv-ic.ok{color:var(--green)} .srv-ic.no{color:var(--red)}
-  .srv-n{font-weight:600}
-  .search{display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:12px 14px;box-shadow:var(--shadow);margin-bottom:14px}
-  .search input{border:none;outline:none;font-size:16px;width:100%;background:none;color:var(--ink);font-family:inherit}
-  .card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);margin-bottom:11px}
-  .card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-  .card .name{font-size:16px;font-weight:700;line-height:1.25}
-  .counts{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap}
-  .chip{flex:1;min-width:78px;background:#F6F7F9;border-radius:11px;padding:9px 10px;text-align:center}
-  .chip .v{font-size:19px;font-weight:700;line-height:1}
-  .chip .k{font-size:10.5px;color:var(--soft);font-weight:600;margin-top:4px;text-transform:uppercase;letter-spacing:.03em}
-  .thumb{width:54px;height:54px;border-radius:12px;object-fit:cover;background:#F0F1F4;flex-shrink:0}
-  .thumb.ph{display:flex;align-items:center;justify-content:center;color:var(--soft);border:1px dashed var(--line)}
-  .row-actions{display:flex;gap:8px;margin-top:12px}
-  .mini{flex:1;border:1px solid var(--line);border-radius:10px;padding:9px;font-size:13px;font-weight:600;color:var(--ink);background:#fff;display:flex;align-items:center;justify-content:center;gap:5px}
-  .mini.danger{color:var(--red);border-color:#FAD2DA}
-  .pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:99px;white-space:nowrap}
-  .pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
-  .p-repair{color:var(--purple);background:#F1EAFE}
-  .p-done{color:var(--green);background:#E4F6EA}
-  .p-parts{color:var(--slate);background:#EEF1F5}
-  .p-assemble{color:var(--amber);background:#FEF3E2}
-  .p-ready{color:var(--green);background:#E4F6EA}
-  .filters{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;margin:0 -2px}
-  .fchip{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);border-radius:99px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--soft)}
-  .fchip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-  .empty{text-align:center;padding:48px 24px;color:var(--soft)}
-  .ship-item{display:flex;align-items:center;gap:10px;background:#F6F7F9;border-radius:11px;padding:10px 12px;margin-bottom:8px}
-  .ship-item .nm{flex:1;font-size:14px;font-weight:600;line-height:1.3}
-  .ship-item .q{font-weight:700;color:var(--blue)}
-  .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:40;height:calc(var(--tab-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex}
-  .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--soft);font-size:10px;font-weight:600;position:relative}
-  .tab svg{width:22px;height:22px}
+  :root{--bg:#ECEEF1;--paper:#FFF;--ink:#15171C;--accent:#FF5A1F;--line:#E2E5EA;--tab-h:64px}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);margin:0;padding-bottom:var(--tab-h)}
+  .appbar{background:var(--ink);color:#fff;padding:16px;display:flex;justify-content:space-between;align-items:center}
+  .view{display:none;padding:16px}.view.active{display:block}
+  .card{background:var(--paper);padding:14px;border-radius:12px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+  .inp{width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;margin-bottom:10px;font-size:16px}
+  .btn{background:var(--accent);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-weight:700;width:100%;font-size:16px}
+  .tabbar{position:fixed;bottom:0;left:0;right:0;height:var(--tab-h);background:#fff;border-top:1px solid var(--line);display:flex}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:#999}
   .tab.on{color:var(--accent)}
-  .overlay{position:fixed;inset:0;z-index:60;background:rgba(20,23,28,.45);display:none;align-items:flex-end}
-  .overlay.show{display:flex}
-  .sheet{background:var(--paper);width:100%;border-radius:22px 22px 0 0;padding:8px 18px calc(20px + env(safe-area-inset-bottom));max-height:90vh;overflow-y:auto;animation:up .26s cubic-bezier(.2,.9,.3,1)}
-  @keyframes up{from{transform:translateY(100%)}to{transform:none}}
-  .grab{width:38px;height:4px;background:var(--line);border-radius:99px;margin:8px auto 14px}
-  .sheet h2{font-size:20px;font-weight:800;margin:0 0 16px}
-  label.fl{display:block;font-size:12.5px;font-weight:700;color:var(--soft);margin:13px 0 6px}
-  .inp{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;font-size:16px;font-family:inherit;outline:none;color:var(--ink);background:#fff}
-  .two{display:flex;gap:10px}.two>div{flex:1}
-  .seg{display:flex;gap:8px;margin-top:6px}
-  .seg button{flex:1;border:1.5px solid var(--line);border-radius:12px;padding:11px;font-weight:700;font-size:13.5px;color:var(--soft)}
-  .seg button.on{border-color:var(--ink);background:var(--ink);color:#fff}
-  .save{width:100%;background:var(--accent);color:#fff;font-weight:800;font-size:16px;padding:15px;border-radius:14px;margin-top:22px;box-shadow:0 6px 16px rgba(255,90,31,.3)}
-  .opt{display:block;width:100%;text-align:left;border:1.5px solid var(--line);border-radius:14px;padding:15px 16px;margin-top:12px;background:#fff}
-  .opt.primary{border-color:var(--accent);background:#FFF4EF}
-  .actions{display:flex;gap:10px;margin-bottom:14px}
-  .ab{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:13px;padding:13px 8px;font-weight:700;font-size:13.5px;color:var(--ink);box-shadow:var(--shadow)}
-  .ab.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-  .photo-row{display:flex;gap:14px;align-items:center;margin-bottom:2px}
-  .photo-box{width:92px;height:92px;border-radius:15px;background:#F6F7F9;border:1.5px dashed var(--line);display:flex;align-items:center;justify-content:center;color:var(--soft);overflow:hidden;flex-shrink:0;cursor:pointer}
-  .photo-box img{width:100%;height:100%;object-fit:cover}
-  .login{position:fixed;inset:0;z-index:100;background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;text-align:center}
+  .login{position:fixed;inset:0;background:var(--ink);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
   .login.hide{display:none}
-  .login .lg{font-size:30px;font-weight:800;letter-spacing:.05em;display:flex;align-items:center;gap:12px}
-  .login .lg .bars{display:inline-flex;gap:3px;align-items:flex-end;height:30px}
-  .login .lg .bars i{display:block;width:3px;background:var(--accent);border-radius:1px}
-  .login .lbox{width:100%;max-width:330px}
-  .login input{width:100%;border:1.5px solid #2c2f37;background:#1d2026;color:#fff;border-radius:13px;padding:15px 16px;font-size:16px;font-family:inherit;outline:none;margin-bottom:12px}
-  .login button{width:100%;background:var(--accent);color:#fff;font-weight:800;font-size:16px;padding:16px;border-radius:13px;margin-top:6px}
-  .chat-input{position:fixed;left:0;right:0;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom));z-index:35;display:none;gap:8px;padding:10px 12px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line)}
-  .chat-input.show{display:flex}
-  .chat-input input{flex:1;border:1.5px solid var(--line);border-radius:22px;padding:11px 16px;font-size:16px;font-family:inherit;outline:none}
-  .chat-input button{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-  .msg-img{max-width:210px;max-height:240px;border-radius:12px;display:block;margin-top:2px}
 </style>
 </head>
 <body>
 
+<!-- ВХОД -->
 <div class="login" id="login">
-  <div class="lg"><span class="bars"><i style="height:16px"></i><i style="height:26px"></i><i style="height:12px"></i><i style="height:30px"></i><i style="height:18px"></i></span>СКЛАД ЦОЙ</div>
-  <div class="lbox">
-    <input id="lg-login" placeholder="Логин" autocomplete="off">
-    <input id="lg-pass" type="password" placeholder="Пароль" autocomplete="off">
-    <button id="lg-btn">Войти</button>
-    <div class="err" id="lg-err" style="color:#ff8c8c;margin-top:12px"></div>
-  </div>
+  <h1>СКЛАД ЦОЙ</h1>
+  <input id="lg-login" class="inp" placeholder="Логин (Аза, Николай, Юлия)" style="background:#2c2f37;color:#fff;border-color:#444">
+  <input id="lg-pass" type="password" class="inp" placeholder="Пароль" style="background:#2c2f37;color:#fff;border-color:#444">
+  <button class="btn" onclick="doLogin()">Войти</button>
+  <div id="lg-err" style="color:#ff8c8c;margin-top:10px"></div>
 </div>
 
 <header class="appbar">
-  <div>
-    <h1><span class="bars"><i style="height:10px"></i><i style="height:16px"></i><i style="height:7px"></i><i style="height:18px"></i><i style="height:11px"></i></span>СКЛАД ЦОЙ</h1>
-    <div class="sub" id="appsub">Учёт товаров</div>
-  </div>
-  <div class="bar-right">
-    <button class="add-btn" id="addBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg><span id="addLabel">Добавить</span></button>
-    <button class="avatar" id="avatarBtn">?</button>
-  </div>
+  <div><b>СКЛАД ЦОЙ</b></div>
+  <div id="status" style="font-size:12px;color:#aaa">Загрузка...</div>
 </header>
 
-<main class="view active" id="view-home"></main>
-<main class="view" id="view-chat"></main>
-<main class="view" id="view-goods"></main>
-<main class="view" id="view-returns"></main>
-<main class="view" id="view-ship"></main>
-
-<div class="chat-input" id="chatInput">
-  <input id="chatField" placeholder="Сообщение…" autocomplete="off">
-  <button id="chatSend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m4 12 16-8-5 16-3.5-6.5L4 12Z"/></svg></button>
-</div>
+<main class="view active" id="view-home"><div class="card">Добро пожаловать на склад!</div></main>
+<main class="view" id="view-goods"><div class="card">Здесь будут товары...</div></main>
+<main class="view" id="view-chat"><div class="card">Здесь будет чат...</div></main>
 
 <nav class="tabbar">
-  <button class="tab on" data-tab="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5M5 9.5V20h14V9.5"/></svg>Главная</button>
-  <button class="tab" data-tab="chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v11H9l-5 4V5Z"/></svg>Чат</button>
-  <button class="tab" data-tab="goods"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7.5 12 3l9 4.5v9L12 21 3 16.5v-9Z"/></svg>Товары</button>
-  <button class="tab" data-tab="returns"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>Возвраты</button>
-  <button class="tab" data-tab="ship"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6h12v9H1zM13 9h4l3 3v3h-7z"/></svg>Фура</button>
+  <button class="tab on" onclick="switchTab('home')">🏠 Главная</button>
+  <button class="tab" onclick="switchTab('goods')">📦 Товары</button>
+  <button class="tab" onclick="switchTab('chat')">💬 Чат</button>
 </nav>
-
-<div class="overlay" id="overlay"><div class="sheet" id="sheet"></div></div>
 
 <script type="module">
   import PocketBase from 'https://cdn.jsdelivr.net/npm/pocketbase@0.21.0/+esm';
   
-  // --- НАСТРОЙКИ ТВОЕГО СЕРВЕРА ---
+  // --- НАСТРОЙКИ ---
   const pb = new PocketBase('http://mytest1234test1234.ru');
+  const USERS = [{login:'Аза',pass:'909010'},{login:'Николай',pass:'Цой2026'},{login:'Юлия',pass:'Склад1'}];
   
-  const USERS=[{login:'Аза',pass:'909010'},{login:'Николай',pass:'Цой2026'},{login:'Юлия',pass:'Склад1'}];
-  let currentUser=null, cloudOn=false, warehouseDocId=null;
-  const KEY='sklad_v3', UKEY='sklad_user';
-  let db={products:[],returns:[],shipments:[]};
-  let chatMsgs=[];
+  let currentUser = null;
+  let db = {products:[], returns:[], shipments:[]};
+  let warehouseDocId = null;
 
-  // --- Логика входа ---
-  function doLogin(){
-    const l=$('#lg-login').value.trim(), p=$('#lg-pass').value;
-    const u=USERS.find(x=>x.login.toLowerCase()===l.toLowerCase()&&x.pass===p);
-    if(!u){ $('#lg-err').textContent='Неверный логин или пароль'; return; }
-    currentUser={login:u.login};
-    localStorage.setItem(UKEY,JSON.stringify(currentUser));
-    $('#login').classList.add('hide');
-    $('#avatarBtn').textContent=u.login[0];
-    render();
-  }
-  $('#lg-btn').onclick=doLogin;
-  try{const u=localStorage.getItem(UKEY);if(u){currentUser=JSON.parse(u);$('#login').classList.add('hide');$('#avatarBtn').textContent=currentUser.login[0];}}catch(e){}
+  // --- ВХОД ---
+  window.doLogin = function() {
+    const l = document.getElementById('lg-login').value.trim();
+    const p = document.getElementById('lg-pass').value;
+    const u = USERS.find(x => x.login.toLowerCase() === l.toLowerCase() && x.pass === p);
+    
+    if (!u) {
+      document.getElementById('lg-err').textContent = 'Неверный логин или пароль';
+      return;
+    }
+    
+    currentUser = u;
+    document.getElementById('login').classList.add('hide');
+    document.querySelector('.appbar div:last-child').textContent = u.login;
+    syncData(); // Загружаем данные с сервера после входа
+  };
 
-  // --- Синхронизация с сервером ---
-  async function syncWithServer(){
-    try{
-      const list = await pb.collection('warehouse').getList(1,1);
-      if(list.items.length > 0){
+  // --- СИНХРОНИЗАЦИЯ ---
+  async function syncData() {
+    try {
+      const list = await pb.collection('warehouse').getList(1, 1);
+      if (list.items.length > 0) {
         warehouseDocId = list.items[0].id;
         const remote = JSON.parse(list.items[0].data || '{}');
         db = remote;
-        if(!db.products) db.products=[];
-        saveLocal();
-        cloudOn = true;
-        setStatus('● общий доступ (Сервер)', '#6ee7a0');
+        if(!db.products) db.products = [];
       } else {
-        const newDoc = await pb.collection('warehouse').create({data:JSON.stringify(db)});
-        warehouseDocId = newDoc.id;
-        cloudOn = true;
+        // Если база пустая, создаем запись
+        const doc = await pb.collection('warehouse').create({ data: JSON.stringify(db) });
+        warehouseDocId = doc.id;
       }
-    }catch(e){ console.error(e); setStatus('⚠ Сервер недоступен', '#ff8c8c'); }
-    render();
+      document.getElementById('status').textContent = '● Сервер подключен';
+      document.getElementById('status').style.color = '#6ee7a0';
+      renderGoods();
+    } catch (e) {
+      console.error(e);
+      document.getElementById('status').textContent = '⚠ Ошибка связи';
+    }
   }
 
-  async function saveToCloud(){
-    if(!cloudOn || !warehouseDocId) return;
-    try{ await pb.collection('warehouse').update(warehouseDocId, {data:JSON.stringify(db)}); }catch(e){}
+  // --- СОХРАНЕНИЕ ---
+  async function saveToCloud() {
+    if (!warehouseDocId) return;
+    try {
+      await pb.collection('warehouse').update(warehouseDocId, { data: JSON.stringify(db) });
+    } catch (e) { console.error(e); }
   }
 
-  function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(db));}catch(e){}}
-  function save(){ saveLocal(); saveToCloud(); }
-  function setStatus(t,c){const s=$('#appsub');if(s){s.textContent=t;s.style.color=c}}
-
-  // --- Рендеринг (упрощенный для примера) ---
-  function render(){
-    $('#view-home').innerHTML=`<div class="srv"><div class="srv-top"><div class="srv-t">Статус: ${cloudOn?'Подключено':'Оффлайн'}</div></div></div>
-    <div class="grid"><div class="stat"><div class="num">${db.products.length}</div><div class="lab">Товаров</div></div>
-    <div class="stat"><div class="num">${db.returns.length}</div><div class="lab">Возвратов</div></div></div>`;
-    
-    // Здесь можно добавить рендер остальных вкладок, как в прошлом коде
-    $('#view-goods').innerHTML = db.products.map(p => `<div class="card"><div class="name">${p.name}</div><div class="counts"><div class="chip"><div class="v">${p.qty}</div></div></div></div>`).join('');
+  // --- РЕНДЕР ТОВАРОВ ---
+  function renderGoods() {
+    const container = document.getElementById('view-goods');
+    if (db.products.length === 0) {
+      container.innerHTML = '<div class="card">Товаров пока нет. Добавьте первый!</div>';
+      return;
+    }
+    container.innerHTML = db.products.map(p => 
+      `<div class="card"><b>${p.name}</b><br>Кол-во: ${p.qty} шт</div>`
+    ).join('');
   }
 
-  const $=s=>document.querySelector(s);
-  
-  // Навигация
-  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on');
-    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-    $('#view-'+b.dataset.tab).classList.add('active');
-  });
-
-  syncWithServer();
+  // --- НАВИГАЦИЯ ---
+  window.switchTab = function(tabName) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + tabName).classList.add('active');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+    event.target.closest('.tab').classList.add('on');
+  };
 </script>
 </body>
 </html>
